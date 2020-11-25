@@ -71,8 +71,7 @@ async function getCleanDBArray (){
 async function getTranslations(linksarr){
     var transJSON =  await getLinksJSON(linksarr)
     translationsArr =  transJSON.map(e=>e.quran.map(e=>e.text)).map(e=>qArrayOptimzer(e))
-    return translationsArr
-    
+    return translationsArr   
     }
     // https://www.shawntabrizi.com/code/programmatically-fetch-multiple-apis-parallel-using-async-await-javascript/
 // Get links async i.e in parallel
@@ -374,6 +373,45 @@ function translateQuery(query){
    return JSON.parse(result)
 }
 
+// verses already sorted when saving
+// The search is not done for ques, that already exists in the json
+function saveEmbedJSON(query, verses){
+// ReadJSON already saved json
+readJSON = fs.readFileSync(path.join(__dirname, 'queryverses.min.json')).toString();
+readJSON = JSON.parse(readJSON)
+
+verses.sort()
+
+// Add our values to it
+// check if  verses already exists, push ques there
+let joinedVerses = verses.join(',')
+let saved = false
+for(let i=0 ;i<readJSON.values.length;i++){
+
+  if(readJSON.values[i].verses.join(',')==joinedVerses){
+    readJSON.values[i].questions.push(query)
+    saved = true
+
+  }
+
+
+}
+
+
+// otherwise push ques & verses at end
+if(!saved)
+readJSON.values.push({"questions":[query],"verses":verses})
+
+// Save it with writefilesync
+fs.writeFileSync(path.join(__dirname, 'queryverses.min.json'), JSON.stringify(readJSON))
+   
+
+
+
+}
+//saveEmbedJSON("what's the purpose of life?", ["4:5","7:5","3:2"])
+
+
   function getGestaltMultiArr(chapter, verseFrom,verseTo, index, parsedString,confirmedArr, front) {
 
       // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
@@ -454,6 +492,7 @@ for (var i = 1; i <= 114; i++) {
     mappingsStr.push(i + ',' + j)
   }
 }
+
 
 
 // Matches quran, surah, ayah, names of surah etc
@@ -869,7 +908,6 @@ const confirmPattern = [
   
   ]
   
-
 
   const tempPatternArr = confirmPattern.map(e => e.source).concat(arabicQuranName.map(e => e[0].source))
 // This stores the pattern to clean verse patterns etc from string

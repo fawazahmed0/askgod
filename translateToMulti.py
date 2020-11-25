@@ -20,6 +20,7 @@ args = sys.argv
 args.pop(0)
 
 # use Ubuntu 20.04.1 LTS in Github actions
+# can be refactored by using a local version of google-codes.min called by node at first time
 
 # Fetch google codes
 g_codes_link = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/isocodes/google-codes.min.json'
