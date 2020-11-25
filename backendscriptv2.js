@@ -367,21 +367,12 @@ function runPyScript(pathToScript, args) {
   return output.stdout.toString();
 }
 
-// pytranslate api fails
-// https://github.com/ssut/py-googletrans/issues/234
-function translateQuery(destLang,queryArr){
- try {
-  let result = runPyScript(path.join(__dirname, "translateTo.py"), destLang.concat(queryArr))
-  return  JSON.parse(result).slice(0,-1)
- } catch (error) {
-   console.error(error)
-   return error
- }
-
+// Takes a string & returns all the translations of a given query in an array
+// It could break anytime ,reasons include timeout, api broken etc
+function translateQuery(query){
+   let result =  runPyScript('translateToMulti.py',[query])
+   return JSON.parse(result)
 }
-
-console.log(translateQuery("ja",["hello world"]))
-
 
   function getGestaltMultiArr(chapter, verseFrom,verseTo, index, parsedString,confirmedArr, front) {
 
