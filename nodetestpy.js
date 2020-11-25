@@ -22,6 +22,6 @@ function runPyScript(pathToScript, args) {
   }
   
 
- val =  runPyScript('translateTo.py',['why is he fighting'])
+ val =  runPyScript('translateToMulti.py',['why is he fighting'])
  console.log(val)
  console.log(JSON.parse(val))
