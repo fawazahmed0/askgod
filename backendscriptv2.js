@@ -60,6 +60,11 @@ async function getDBArray () {
     return dbJSON.table.rows.map(e => e.c[column].v)
   }
 
+  // Cleans the array from already added array, have to add code later here
+async function getCleanDBArray (){
+
+}
+
   
 // Fetches the translationLinks and returns the translations in optimized array form
 // Also assigns it to global translationsArr
