@@ -64,6 +64,9 @@ async function getDBArray () {
 
 // Cleans the array from already added array, have to add code later here
 async function getCleanDBArray () {
+ const searchArr = await getDBArray()
+  let fullQuestionsArr = questionVerses.values.map(e=>e.questions).flat()
+ return searchArr.filter(e=>!fullQuestionsArr.includes(e))
 
 }
 
@@ -175,11 +178,11 @@ function htmlToString (htmlString) {
 // Begins inference
 async function inference () {
   // Note we have to clean the array before wasting resources for already embedded queries
-  const searchArr = await getDBArray()
+  const cleanSearchArr = await getCleanDBArray()
   // Launch the browser
   await launchBrowser()
 
-  for (const query of searchArr) {
+  for (const query of cleanSearchArr) {
     // Stores the links we got from google search
     const linksarr = await getGoogleLinks(query)
     // stores the  html string for all the links we got from previous google search step
@@ -377,6 +380,8 @@ function saveQuestionVerses (query, verses) {
   // Save the questionVerses back to filesystem
   fs.writeFileSync(questionVersesPath, JSON.stringify(questionVerses))
 }
+
+//saveQuestionVerses ("why is planets big?", ["4:7","3:4"])
 
 function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, confirmedArr, front) {
   // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
