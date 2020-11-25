@@ -62,12 +62,12 @@ async function getDBArray () {
   return dbJSON.table.rows.map(e => e.c[column].v)
 }
 
-// Cleans the array from already added array, have to add code later here
+// Cleans the searched questions retrieved from google forms from already added question in questionVerses json
+// To avoid doing inference for questions which were already inferred in questionVerses json
 async function getCleanDBArray () {
- const searchArr = await getDBArray()
-  let fullQuestionsArr = questionVerses.values.map(e=>e.questions).flat()
- return searchArr.filter(e=>!fullQuestionsArr.includes(e))
-
+  const searchArr = await getDBArray()
+  const fullQuestionsArr = questionVerses.values.map(e => e.questions).flat()
+  return searchArr.filter(e => !fullQuestionsArr.includes(e))
 }
 
 // Fetches the translationLinks and returns the translations in optimized array form
@@ -381,7 +381,7 @@ function saveQuestionVerses (query, verses) {
   fs.writeFileSync(questionVersesPath, JSON.stringify(questionVerses))
 }
 
-//saveQuestionVerses ("why is planets big?", ["4:7","3:4"])
+// saveQuestionVerses ("why is planets big?", ["4:7","3:4"])
 
 function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, confirmedArr, front) {
   // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
