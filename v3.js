@@ -3,7 +3,7 @@ const searchQuery = 'what is the purpose of life'
 
 // Change link here based on UTC date, day of month
 // Add another heroku link here
-const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com','https://immense-castle-88569.herokuapp.com']
+const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com', 'https://immense-castle-88569.herokuapp.com']
 // Change from cc verified link to new heroku link from 11th day of month
 const corsHeroku = new Date().getUTCDate() > 10 ? corsHerokuLinks[0] : corsHerokuLinks[1]
 
@@ -68,9 +68,9 @@ async function getQueryVerses (query) {
 // Returns google search links as array
 async function getGoogleLinks (searchQuery) {
 // First try with cloudflare cors, cuz it has very low api limits
-  var result = await corsCloudflareFetch([googleSearchLink + encodeURIComponent(searchQuery)])
+  let result = await corsCloudflareFetch([googleSearchLink + encodeURIComponent(searchQuery)])
 
-  var links = getLinksFromHTML(result)
+  let links = getLinksFromHTML(result)
   // Remove links containig keyword google or youtube in it
   links = links.filter(e => !/(google|youtube)/i.test(e))
 
@@ -79,9 +79,9 @@ async function getGoogleLinks (searchQuery) {
   if (links > 2) { return links }
 
   // Trying with heroku
-   result = await corsHerokuFetch(googleSearchLink + encodeURIComponent(searchQuery))
+  result = await corsHerokuFetch(googleSearchLink + encodeURIComponent(searchQuery))
 
-   links = getLinksFromHTML(result)
+  links = getLinksFromHTML(result)
   // Remove links containig keywork google or youtube init
   links = links.filter(e => !/(google|youtube)/i.test(e))
 
@@ -90,8 +90,7 @@ async function getGoogleLinks (searchQuery) {
   return links
 }
 // called only once
-async function initializer(){
-
+async function initializer () {
 
 }
 
@@ -219,59 +218,45 @@ function saveToDB (data) {
   $('#searchqueryform').submit()
 }
 
-
-
 async function gestaltInference (parsedString) {
-  await getTranslations (translationLinks)
+  await getTranslations(translationLinks)
   const numbers = Array.from(parsedString.matchAll(numberPattern)).filter(e => e[0] > 0 && e[0] <= 286)
   let fullConfirmedArr = []
 
   for (let i = 0; i < numbers.length; i++) {
-
-    for(var patt of goodPatterns){
+    for (const patt of goodPatterns) {
       let tempArr = []
       // if number exists next to this number i.e within 15 chars
       const twoNum = numbers[i + 1] && numbers[i + 1].index - 15 < numbers[i].index
 
-     if(new RegExp(patt).test(parsedString.substring(numbers[i].index-15, numbers[i].index + 15))  && twoNum ) {
+      if (new RegExp(patt).test(parsedString.substring(numbers[i].index - 15, numbers[i].index + 15)) && twoNum) {
+        // assuming chapter number multi verse
+        if (new RegExp(multiVersePattern).test(parsedString.substring(numbers[i].index - 15, numbers[i].index + 15))) {
+          // chapter Number, verse1 to verse2 pattern
+          tempArr = getGestaltMultiArr(numbers[i][0], numbers[i + 1][0], numbers[i + 2][0], numbers[i].index, parsedString, fullConfirmedArr)
 
-    // assuming chapter number multi verse
-    if (new RegExp(multiVersePattern).test(parsedString.substring(numbers[i].index-15, numbers[i].index + 15)) ) {
-         // chapter Number, verse1 to verse2 pattern
-       tempArr = getGestaltMultiArr(numbers[i][0], numbers[i + 1][0], numbers[i + 2][0], numbers[i].index, parsedString, fullConfirmedArr)
-
-       if(tempArr.length==0)
-      tempArr = getGestaltMultiArr(numbers[i][0], numbers[i + 1][0], numbers[i + 2][0], numbers[i].index, parsedString, fullConfirmedArr, true)
-
+          if (tempArr.length == 0) { tempArr = getGestaltMultiArr(numbers[i][0], numbers[i + 1][0], numbers[i + 2][0], numbers[i].index, parsedString, fullConfirmedArr, true) }
         }
-    
-      // assuming chapter verse pattern
-      if(tempArr.length==0)
-      tempArr = getGestaltArr(numbers[i][0], numbers[i + 1][0], numbers[i].index, parsedString, fullConfirmedArr)
-      if(tempArr.length==0)
-      tempArr = getGestaltArr(numbers[i][0], numbers[i + 1][0], numbers[i].index, parsedString, fullConfirmedArr, true)
 
-  }
+        // assuming chapter verse pattern
+        if (tempArr.length == 0) { tempArr = getGestaltArr(numbers[i][0], numbers[i + 1][0], numbers[i].index, parsedString, fullConfirmedArr) }
+        if (tempArr.length == 0) { tempArr = getGestaltArr(numbers[i][0], numbers[i + 1][0], numbers[i].index, parsedString, fullConfirmedArr, true) }
+      }
 
       // Remove the next numbers if they are within 10 characters of this confirmed pattern
       // we don't want to waste time
-      if(tempArr.length>0){
-    // Add the confirmed verses
-      fullConfirmedArr = fullConfirmedArr.concat(tempArr)
-      let temp=i
-      for(let j=temp+1;j<temp+10;j++)
-          {
-            if(numbers[j]&&numbers[j].index-15<numbers[temp].index)
-              i++
-            else
-              break;
-          }
-          // break pattern loop
-          break
+      if (tempArr.length > 0) {
+        // Add the confirmed verses
+        fullConfirmedArr = fullConfirmedArr.concat(tempArr)
+        const temp = i
+        for (let j = temp + 1; j < temp + 10; j++) {
+          if (numbers[j] && numbers[j].index - 15 < numbers[temp].index) { i++ } else { break }
         }
-
-}
-}
+        // break pattern loop
+        break
+      }
+    }
+  }
   return fullConfirmedArr
 }
 
@@ -284,8 +269,6 @@ function getGestaltRatio (str1, str2) {
 function checkGestaltRatio (str1, str2) {
   return getGestaltRatio(str1, str2) > gestaltThreshold
 }
-
-
 
 // Takes chapterNo  VerseNo and content and compares both of them
 // Returns verse in an array if the ratio is more than a given threshold
@@ -366,9 +349,6 @@ function getFromToArr (from, to) {
   return tempArr
 }
 
-
-
-
 // Creating line to [chapter,verseNo] mappings
 // Array containing number of verses in each chapters
 const chaplength = [7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52, 99, 128, 111, 110, 98, 135, 112, 78, 118, 64, 77, 227, 93, 88, 69, 60, 34, 30, 73, 54, 45, 83, 182, 88, 75, 85, 54, 53, 89, 59, 37, 35, 38, 29, 18, 45, 60, 49, 62, 55, 78, 96, 29, 22, 24, 13, 14, 11, 11, 18, 12, 12, 30, 52, 52, 44, 28, 28, 20, 56, 40, 31, 50, 40, 46, 42, 29, 19, 36, 25, 22, 17, 19, 26, 30, 20, 15, 21, 11, 8, 8, 19, 5, 8, 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6]
@@ -382,7 +362,6 @@ for (i = 1; i <= 114; i++) {
     mappingsStr.push(i + ',' + j)
   }
 }
-
 
 // Have to use multiple english translations to get all the results
 // Refer https://en.wikipedia.org/wiki/Biblical_canon  to add more names
@@ -886,4 +865,4 @@ lunrInferenceVerses(parsedString)
 tensorInference(lunrConfirmedVerse)
 */
 parsedString = htmlToString(bigstr)
-gestaltInference (parsedString).then(console.log)
+gestaltInference(parsedString).then(console.log).catch(console.error)
