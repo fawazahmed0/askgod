@@ -26,7 +26,7 @@ const CHAPTER_LENGTH = 114
 // stores the translations
 let translationsArr = []
 
-const gestaltThreshold = 0.55
+const gestaltThreshold = 0.60
 
 // Array containig lunrIndex for each verse
 // let lunrIndexArr = []
@@ -44,7 +44,7 @@ const questionVerses = JSON.parse(questionVersesStr)
 // const googleCodesLink = apiLink + '/isocodes/google-codes.min.json'
 
 //  english translation editions to use in lunr
-const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json']
+const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json','eng-mohammedmarmadu.min.json']
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e)
 
@@ -149,11 +149,6 @@ function htmlToString (htmlString) {
 
 // Begins inference
 async function inference () {
-  // const cleanSearchArr = await getCleanDBArray()
-
-  //  await launchBrowser()
-
-  //  await getTranslations(translationLinks)
 
   // Get clean questions array, with duplicates removed
   // Launch the browser
@@ -200,8 +195,6 @@ function qArrayOptimzer (arr) {
 }
 
 async function gestaltInference (parsedString) {
-  // Get all the translations
-  await getTranslations(translationLinks)
 
   const numbers = Array.from(parsedString.matchAll(numberPattern)).filter(e => e[0] > 0 && e[0] <= 286)
   let fullConfirmedArr = []
@@ -279,21 +272,24 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
   verse = parseInt(verse)
   index = parseInt(index)
   let content
-  const slack = 15
+  const slack = 20
 
   // return with empty array if chap verse doesn't exist or chap verse already exists in confirmedArr
-  if (chapter > CHAPTER_LENGTH || !translationsArr[0][chapter - 1][verse - 1] ||
-        confirmedArr.includes(chapter + ',' + verse)) { return [] }
+  if (chapter > CHAPTER_LENGTH || !translationsArr[0][chapter - 1][verse - 1] )
+ { return [] }
+
+ if(confirmedArr.includes(chapter + ',' + verse))
+    return [chapter + ',' + verse]
 
   for (const translation of translationsArr) {
     const verseStr = translation[chapter - 1][verse - 1]
     const verseLen = verseStr.length
     if (front) {
-      content = parsedString.substring(index - slack, index + verseLen)
-      content = cleanPatterns(content, true)
+      content = parsedString.substring(index - slack, index + verseLen+15)
+    //  content = cleanPatterns(content, true)
     } else {
-      content = parsedString.substring(index - verseLen, index + slack)
-      content = cleanPatterns(content)
+      content = parsedString.substring(index - verseLen-15, index + slack)
+    //  content = cleanPatterns(content)
     }
     if (checkGestaltRatio(verseStr, content)) { return [chapter + ',' + verse] }
   }
