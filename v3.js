@@ -1,6 +1,7 @@
 // Search query to be entered by the user
 var searchQuery = "what is the purpose of life"
 
+// Change link here based on UTC date, day of month
 var corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com']
 
 // Set the link here using current date to avoid shutdown of dyno
@@ -20,13 +21,13 @@ var editionNames = ['eng-ummmuhammad.min.json','eng-abdullahyusufal.min.json','e
 // Contains english translation links to use in lunr
 var translationLinks = editionNames.map(e=>editionsLink+'/'+e)
 
-var lunrIndexLink = "https://cdn.jsdelivr.net/gh/fawazahmed0/fawazahmed0.github.io-file-hosting@master/askgod/lunrIndexArray.min.json"
-
 // This will contain the optimized english translations
 var engTranslations = []
 
-// Array containig lunrIndex for each verse
-var lunrIndexArr = []
+// JSON containing already searched verses from node side
+let questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/questionverses.min.json'
+let [questionVerses] = await getLinksJSON([quesVerseLink])
+
 
 // Number of verses in quran
 const VERSE_LENGTH = 6236
@@ -38,21 +39,6 @@ const CHAPTER_LENGTH = 114
 //  i.e no digit front and end of match
 var numberPattern = new RegExp(/(?<!\d)[0-2]?\d{1,2}(?!\d)/gi)
 
-// Set this, so there is no mem leak
-// https://codepen.io/fawazahmed0/pen/JjKPzWy?editors=1011
-// https://github.com/tensorflow/tfjs/issues/4015
-tf.env().set("WEBGL_DELETE_TEXTURE_THRESHOLD", 0);
-
-
-
-// Loading quran verse detection model
-var qverse_model = tf.loadLayersModel(
-  "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-verse-detection@master/model/model.json"
-);
-// Loading universal sentence encoder model
-var usemodel = use.load();
-
-var models = Promise.all([qverse_model, usemodel])
 
 
 // Add quran to the search query
@@ -72,12 +58,15 @@ return  translatedText
 
 }
 
-// Use old search query verses if exists in json
-// This needs to be coded later
-function checkSearchExists() {
 
-
-
+// Get the question verses from already saved JSON
+// returns empty array if no questions matches the query
+async function getQueryVerses(query) {
+for (let val of questionVerses.values) {
+if(val.questions.includes( query.toLowerCase().trim() ))
+       return val.verses
+}
+return []
 }
 
 
@@ -182,266 +171,6 @@ function htmlToString(htmlString){
   str = str.replace(/<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/gi," ").replace(/<([A-Z][A-Z0-9]*)>.*?<\/\1>/gi," ").replace(/<([A-Z][A-Z0-9]*)\b[^>]*\/?>(.*?)/gi," ").replace(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi," ").replace(/(?<=\s)[^ ]*\s*\{[^\}]+\:[^\}]+\}/gi," ").replace(/[^\s]{17,}/gi," ").replace(/\d{4,}/gi," ").replace(/\s\s+/g, " ")
 
 return str
-
-}
-
-// Fetches array containing pre generated lunrIndices
-// https://lunrjs.com/guides/getting_started.html#creating-an-index
-// https://lunrjs.com/guides/index_prebuilding.html
-
-async function getLunrIndex(){
-var lunrJSON = await getLinksJSON([lunrIndexLink])
-
-lunrIndexArr = lunrJSON[0].map(e=>lunr.Index.load(e))
-
-lunrIndexArr = qArrayOptimzer(lunrIndexArr)
-}
-
-var tensorConfirmedVerse = []
-// Takes an array containing confirmed verses
-// And reconfirms it using tensorflow
-async function tensorInference(arr){
-
-// load the models, call this only one time
-await loadModels()
-// Store only content string from  [chap,ver,content]
-var tempArr = arr.map(e=>e[2])
-// array containing confirmed lineNos
-var fullArr = []
-var fullPredictions = []
-// Embedding the text into numbers, so that model can understand
-while(tempArr.length>0){
-var embed =  await usemodel.embed(tempArr.splice(0,62));
-// predicting
-var predictions = qverse_model.predict(embed).softmax();
-// Array contaning the line number of the verse
-fullArr = fullArr.concat(predictions.argMax(1).arraySync())
-//fullPredictions = fullPredictions.concat(predictions.max(1).arraySync())
-}
-// convert lineNo to chapter,verse string
-tensorConfirmedVerse = fullArr.map(e=>mappingsStr[e])
-
-//console.log("predictions ",fullPredictions)
-
-tensorConfirmedVerse = tensorConfirmedVerse.filter((e,i)=>e==lunrConfirmedVerseStr[i])
-console.log(tensorConfirmedVerse)
-
-}
-
-async function loadModels(){
-loadModels = function(){};
-  models = await models
-  qverse_model = await qverse_model
-  usemodel = await usemodel
-
-}
-
-
- function getGestaltRatio(str1,str2){
-  return new difflib.SequenceMatcher(null, str1, str2).ratio()
-} 
-
-
-
-var lunrConfirmedVerse = []
-var lunrConfirmedVerseStr = []
-// Returns array of verses after confirming them using lunr
-async function lunrInferenceVerses(parsedString){
- var trans = await getTranslations(translationLinks)
- trans = trans[0]
-// full words trim, remeber to take little more chars than required while giving to search
-// .replace(/^.{0,17}?\s/si,"").trim().split(/\s/).slice(0,-1).join(" ")
-
-var numbers = Array.from(parsedString.matchAll(numberPattern)).filter(e=>e[0]>0&&e[0]<=286)
-
-for(var i=0;i<numbers.length;i++){
-
-for(var patt of goodPatterns){
-  if(new RegExp(patt).test(parsedString.substring(numbers[i].index-15, numbers[i].index + 15)) &&
-  // if number exists next to this number i.e within 15 chars
-   numbers[i+1].index-15<numbers[i].index  ){
-    var chapter = parseInt(numbers[i][0])
-    var verse = parseInt(numbers[i+1][0])
-    if(chapter<=CHAPTER_LENGTH && verseLenArr[chapter-1][verse-1]
-// Also make sure it's not already in confirmedVerse to avoid wasting resources
-       && !lunrConfirmedVerseStr.includes(chapter+","+verse)){
-     var verseLen = verseLenArr[chapter-1][verse-1]
-     var content;
-     for(var k=0;k<2;k++){
-       // Assuming verse is before the pattern
-       if(k==0)
-     content = parsedString.substring(numbers[i].index-verseLen-10, numbers[i].index+numbers[i][0].length+4)
-       else
-       // Assuming verse is after the pattern
-       content = parsedString.substring(numbers[i].index-4, numbers[i].index+numbers[i][0].length+verseLen+10)
-     content = cleanPatterns(content)
-    //  if(lunrSearchCheck(lunrIndexArr[chapter-1][verse-1], cleanPatterns(content))){
-      if(gestaltRatio(trans[chapter-1][verse-1], cleanPatterns(content))){
-        lunrConfirmedVerse.push([chapter,verse,content])
-        lunrConfirmedVerseStr.push(chapter+","+verse)
-        break
-      }
-    }
-
-
-    }
-
-    // Remove the next numbers if they are within 10 characters of this confirmed pattern
-      // we don't want to waste time
-      temp=i
-      for(var j=temp+1;j<temp+10;j++)
-          {
-            if(numbers[j]&&numbers[j].index-15<numbers[temp].index)
-              i++
-            else
-              break;
-          }
-
-
-  }
-
-}
-
-}
-
-console.log(lunrConfirmedVerse)
-
-/*
-
-var counter=0
-outerLoop:
-for(var i=0;i<numbers.length;i++){
-  if(numbers[i]){
- for(var patt of goodPatterns){
-  if(new RegExp(patt).test(parsedString.substring(numbers[i].index-15, numbers[i].index + 15)) || numberPattern.test(parsedString.substring(numbers[i].index+numbers[i][0].length, numbers[i].index+numbers[i][0].length+5 ))){
-       console.log("string is,"+parsedString.substring(numbers[i].index-20, numbers[i].index + 20))
-       chap = numbers[i][0]
-       ver = numbers[i+1][0]
-       if(numbers[i+1].index-7<numbers[i].index && engTranslations[0][chap-1] && engTranslations[0][chap-1][ver-1]){
-
-
-         subvalLength = engTranslations[0][chap-1][ver-1].length
-         subval = parsedString.substring(numbers[i].index-subvalLength-10, numbers[i].index+numbers[i][0].length+4)
-         if(lunrSearchCheck(lunrIndexArr[mappingsStr.indexOf(chap+","+ver)], cleanPatterns(subval)))
-            console.log("count: ",counter++,"passed for ",chap,ver)
-
-       }
-     // Remove the next numbers if they are within 10 characters of this confirmed pattern
-       // we don't want to waste time
-       for(var j=i+1;j<i+10;j++)
-           {if(numbers[j]&&numbers[j].index-15<numbers[i].index)numbers[j]=undefined;}
-        continue outerLoop
-      }
-}
-// Remove the matches which did not pass above regex
-numbers[i]=undefined
-}
-}
-// Remove the undefined values, which we got from above step
-numbers = numbers.filter(Boolean)
-console.log("numbers length:"+numbers.length)
-// Print high quality matches
-console.log(numbers)
-
-*/
-
-
-}
-
-
-// Remove the numbers, patterns such as 3:4 ,etc from the given string
-// And return the cleaned one
-// Also remove  alphanumeric chars, removing all punctuations , double whitespaces
-// Don't remove englishquranname patterns
-
-function cleanPatterns(str,front){
-
-var str=str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-var charCount = 7
-var fullPattern
-if(front)
-fullPattern = new RegExp("^.{0,"+charCount+"}?"+cleanStrPattern.source,'si')
-else
-fullPattern = new RegExp(cleanStrPattern.source+".{0,"+7+"}$",'si')
-
-
-
-for(var i=0;i<50;i++)
-str=str.replace(fullPattern," ")
-
-return str.split(/\s/).slice(1,-1).join(" ").replace(/[^A-Z\s]|_/gi, " ").replace(/\s\s+/g, " ").trim()
-
-/*
-var replacePattern;
-var matchedStr
-// Remove patterns only at starting or ending side
-
-for(pattern of patternsArr){
-  if(front)
-     replacePattern = new RegExp("^.{0,5}"+pattern,'i')
-  else
-     replacePattern = new RegExp(pattern+".{0,5}$",'i')
-
- matchedStr = str.match(replacePattern)
-
-    if(matchedStr)
-    str=str.replace(matchedStr," ".repeat(1))
-
-}
-
-*/
-  // Getting only alphanumeric chars, removing all punctuations , double whitespaces etc
-
-
-}
-
-// Have to test this later again
-// Using lunr.js ,as it's better in document search
-// Remeber to keep query of similar length as of verse
-function lunrSearchCheck(lunrIndex, query) {
-
-  // count no of words in query
-  // Ref: https://stackoverflow.com/questions/18679576/counting-words-in-string
-  var queryLength = query.trim().split(/\s+/).length;
-  var scoreThreshold;
-
-  if (queryLength > 300) {
-    // Seeing the coorelation pattern below, I got to this scoreThreshold
-    // This was checked by manually performing queries and noting the score
-    scoreThreshold = 1.15 / 250 * queryLength;
-  } else if (queryLength > 250) {
-    scoreThreshold = 1.6;
-  } else if (queryLength > 200) {
-    scoreThreshold = 1.5;
-  } else if (queryLength > 150) {
-    scoreThreshold = 1.3;
-  } else if (queryLength > 100) {
-    scoreThreshold = 1.1;
-  } else if (queryLength > 70) {
-    scoreThreshold = 1;
-  } else if (queryLength > 40) {
-    scoreThreshold = 0.95;
-  } else if (queryLength > 35) {
-    scoreThreshold = 0.9;
-  } else if (queryLength > 25) {
-    scoreThreshold = 0.69;
-  } else if (queryLength > 12) {
-    scoreThreshold = 0.49;
-  } else if (queryLength > 4) {
-    scoreThreshold = 0.35;
-  } else {
-    scoreThreshold = 0.25;
-  }
-
-  try {
-    // If this throws error, it means query has no match
-    if (lunrIndex.search(query)[0].score > scoreThreshold) {
-      return true
-    }
-    return false
-  } catch (error) {
-    return false
-  }
 
 }
 
