@@ -12,13 +12,13 @@ const { spawnSync } = require('child_process')
 // Link having questions searched by user
 const dbJSONLink = 'https://docs.google.com/spreadsheets/d/1THkt6fNsxKPQ2aE1GDnlzWzT9dt_CHmMijjScUw9z0s/gviz/tq?tqx=out:json'
 
-// To allow going to any page
-let page
+// To allow going to any context
+let context
 // Allows closing of browser from anywhere
 let browser
 
 // Number of verses in quran
-const VERSE_LENGTH = 6236
+// const VERSE_LENGTH = 6236
 
 // No of chapters in quran
 const CHAPTER_LENGTH = 114
@@ -41,7 +41,7 @@ const questionVersesPath = path.join(__dirname, 'questionverses.min.json')
 const questionVersesStr = fs.readFileSync(questionVersesPath).toString()
 const questionVerses = JSON.parse(questionVersesStr)
 
-const googleCodesLink = apiLink + '/isocodes/google-codes.min.json'
+// const googleCodesLink = apiLink + '/isocodes/google-codes.min.json'
 
 //  english translation editions to use in lunr
 const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json']
@@ -66,8 +66,8 @@ async function getDBArray () {
 // To avoid doing inference for questions which were already inferred in questionVerses json
 async function getCleanDBArray () {
   const searchArr = await getDBArray()
-  const fullQuestionsArr = questionVerses.values.map(e => e.questions).flat()
-  return searchArr.filter(e => !fullQuestionsArr.includes(e))
+  const fullQuestionsArr = questionVerses.values.map(e => e.questions).flat().map(e => e.toLowerCase())
+  return searchArr.filter(e => !fullQuestionsArr.includes(e.toLowerCase()))
 }
 
 // Fetches the translationLinks and returns the translations in optimized array form
@@ -88,31 +88,36 @@ async function getLinksJSON (urls) {
 // Takes links array to be fetched and returns merged html of all links
 // Usually getGoogleLinks() result is passed in here
 async function linksFetcher (linksarr) {
-  // stores html for all links
-  let tempHTML = ''
+  const val = await Promise.all(linksarr.map(e => linkFetcher(e)))
 
-  for (const link of linksarr) {
-    await page.goto(link, { timeout: 60000 })
-    //  await page.addScriptTag({url: 'https://code.jquery.com/jquery-3.5.1.min.js'})
-    tempHTML = tempHTML + await page.evaluate(() => {
-      // Remove few tags from html as they don't parse well
-      function removeTag (tag) {
-        const elements = document.getElementsByTagName(tag)
-        for (let i = elements.length; i-- > 0;) { elements[i].parentNode.removeChild(elements[i]) }
-      }
-      // remove script and style tags
-      removeTag('script')
-      removeTag('style')
-      return document.documentElement.outerHTML
-    })
-    //  tempStr = tempStr+ await page.evaluate(() => $(document).find("script,style").remove().end().text());
-  }
+  //  for (const link of linksarr) {
+
+  //   tempHTML = tempHTML + linkFetcher(link)
+
+  //  tempStr = tempStr+ await page.evaluate(() => $(document).find("script,style").remove().end().text());
+  // }
   // removing css,html,links,ISBN,17+ character length,multiple spaces from str to narrow down the search
   // tempStr = tempStr.replace(/<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/gi," ").replace(/<([A-Z][A-Z0-9]*)>.*?<\/\1>/gi," ").replace(/<([A-Z][A-Z0-9]*)\b[^>]*\/?>(.*?)/gi," ").replace(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi," ").replace(/(?<=\s)[^ ]*\s*\{[^\}]+\:[^\}]+\}/gi," ").replace(/[^\s]{17,}/gi," ").replace(/\d{4,}/gi," ").replace(/\s\s+/g, " ")
   // tempStr = await page.evaluate(() => $(document).find("script,style").remove().end().text());
-  await browser.close()
 
-  return tempHTML
+  return val.reduce((full, curr) => full + curr)
+}
+
+async function linkFetcher (link) {
+  const page = await context.newPage()
+  await page.goto(link, { timeout: 60000 })
+  //  await page.addScriptTag({url: 'https://code.jquery.com/jquery-3.5.1.min.js'})
+  return await page.evaluate(() => {
+    // Remove few tags from html as they don't parse well
+    function removeTag (tag) {
+      const elements = document.getElementsByTagName(tag)
+      for (let i = elements.length; i-- > 0;) { elements[i].parentNode.removeChild(elements[i]) }
+    }
+    // remove script and style tags
+    removeTag('script')
+    removeTag('style')
+    return document.documentElement.outerHTML
+  })
 }
 
 // Tested
@@ -120,20 +125,12 @@ async function linksFetcher (linksarr) {
 
 // Page and browser is a global variable and it can be accessed from anywhere
 // function that launches a browser
-async function launchBrowser (linkToOpen, downloadPathDir) {
+async function launchBrowser () {
   browser = await firefox.launch({
-    headless: false,
-    downloadsPath: downloadPathDir
+    headless: false
   })
-  const context = await browser.newContext({
-    acceptDownloads: true
-  })
-  page = await context.newPage()
-  if (linkToOpen) {
-    await page.goto(linkToOpen, {
-      timeout: 60000
-    })
-  }
+  context = await browser.newContext()
+
   // Load jquery in the page
   // later remove this after fix, https://github.com/microsoft/playwright/issues/4284
   //  await page.addInitScript(fs.readFileSync('jquery-3.5.1.min.js', 'utf8'));
@@ -141,7 +138,7 @@ async function launchBrowser (linkToOpen, downloadPathDir) {
 
 async function getGoogleLinks (query) {
   // This should be kept somewhere else
-
+  const page = await context.newPage()
   await page.goto(googleSearchLink + encodeURIComponent(query), {
     timeout: 60000
   })
@@ -181,18 +178,51 @@ async function inference () {
   const cleanSearchArr = await getCleanDBArray()
   // Launch the browser
   await launchBrowser()
+  // Get all the translations
+  await getTranslations(translationLinks)
 
   for (const query of cleanSearchArr) {
     // Stores the links we got from google search
-    const linksarr = await getGoogleLinks(query)
+    const linksarr = await getGoogleLinks(query + ' in quran')
     // stores the  html string for all the links we got from previous google search step
     const htmlStr = await linksFetcher(linksarr)
     // stores the parsed html string
     const parsedStr = htmlToString(htmlStr)
-    // Takes
-    // tensorBruteInference(parsedStr)
+
+    //   const bigstr = fs.readFileSync(path.join(__dirname, 'notehtmlstr')).toString()
+    //   const parsedStr = htmlToString(bigstr)
+
+    // Get numbers in parsedString
+    //  const numbers = Array.from(parsedStr.matchAll(numberPattern)).filter(e => e[0] > 0 && e[0] <= 286)
+    let confirmedVerses = await gestaltInference(parsedStr)
+    // Remove duplicates
+    confirmedVerses = [...new Set(confirmedVerses)]
+    let translatedQueryArr
+    try {
+      translatedQueryArr = translateQuery(query).concat(query)
+    } catch (error) {
+      console.error(error)
+      translatedQueryArr = [query]
+    }
+    // Remove duplicates
+    translatedQueryArr = [...new Set(translatedQueryArr)]
+
+    saveQuestionVerses(translatedQueryArr, confirmedVerses)
+
+    // let testarr = []
+    // console.log(verseLenArr['0'])
+    // for (let i = 0; i < numbers.length - 2; i++) {
+    // testarr = testarr.concat(getGestaltMultiArr(numbers[i][0], numbers[i + 1][0],numbers[i + 2][0], numbers[i].index, parsedStr,testarr))
+    // testarr = testarr.concat(getChapMultiVerStrArr(numbers[i][0],numbers[i+1][0],numbers[i+2][0],numbers[i].index, parsedStr))
   }
+  // testarr = testarr.filter(e=>lunrSearchCheck(lunrIndexArr[e[0].split(',')[0]-1][e[0].split(',')[1]-1],e[1]))
+  // testarr = testarr.map(e => e.concat(lunrSearchCheck(lunrIndexArr[e[0].split(',')[0] - 1][e[0].split(',')[1] - 1], e[1])))
+
+  // fs.writeFileSync('testarr', JSON.stringify(testarr, null, 4))
+
+  await browser.close()
 }
+inference()
 
 // optimizes a flat array of 6236 length to optimized array
 // which can be accessed by arr[chap-1][verse-1]
@@ -269,28 +299,6 @@ async function gestaltInference (parsedString) {
   return fullConfirmedArr
 }
 
-// Just for testing
-async function test () {
-  const bigstr = fs.readFileSync(path.join(__dirname, 'notehtmlstr')).toString()
-  const parsedStr = htmlToString(bigstr)
-  // Get all the translations
-  await getTranslations(translationLinks)
-  // Get numbers in parsedString
-  const numbers = Array.from(parsedStr.matchAll(numberPattern)).filter(e => e[0] > 0 && e[0] <= 286)
-  const testarr = await gestaltInference(parsedStr)
-  // let testarr = []
-  // console.log(verseLenArr['0'])
-  for (let i = 0; i < numbers.length - 2; i++) {
-    //   testarr = testarr.concat(getGestaltMultiArr(numbers[i][0], numbers[i + 1][0],numbers[i + 2][0], numbers[i].index, parsedStr,testarr))
-
-    // testarr = testarr.concat(getChapMultiVerStrArr(numbers[i][0],numbers[i+1][0],numbers[i+2][0],numbers[i].index, parsedStr))
-  }
-  // testarr = testarr.filter(e=>lunrSearchCheck(lunrIndexArr[e[0].split(',')[0]-1][e[0].split(',')[1]-1],e[1]))
-  // testarr = testarr.map(e => e.concat(lunrSearchCheck(lunrIndexArr[e[0].split(',')[0] - 1][e[0].split(',')[1] - 1], e[1])))
-  console.log(testarr)
-  fs.writeFileSync('testarr', JSON.stringify(testarr, null, 4))
-}
-
 // Returns gestalt ratio between two given string
 function getGestaltRatio (str1, str2) {
   return new difflib.SequenceMatcher(null, str1, str2).ratio()
@@ -357,7 +365,7 @@ function translateQuery (query) {
   return JSON.parse(result)
 }
 
-// The search is not done for ques, that already exists in the json
+// Takes array of translated queries and confirmed verses & save to questionverses.min.json
 function saveQuestionVerses (query, verses) {
 // sort the passed verses
   verses.sort()
@@ -368,20 +376,19 @@ function saveQuestionVerses (query, verses) {
   // Check verses exists, if exists then push the query in the questions array
   // So that things are saved efficiently
     if (questionVerses.values[i].verses.join(',') === joinedVerses) {
-      questionVerses.values[i].questions.push(query)
+      questionVerses.values[i].questions.push(...query)
       saved = true
       break
     }
   }
-
   // if saved is still false, then push the new question & verses
-  if (saved === false) { questionVerses.values.push({ questions: [query], verses: verses }) }
+  if (saved === false) { questionVerses.values.push({ questions: query, verses: verses }) }
 
   // Save the questionVerses back to filesystem
   fs.writeFileSync(questionVersesPath, JSON.stringify(questionVerses))
 }
 
-// saveQuestionVerses ("why is planets big?", ["4:7","3:4"])
+// saveQuestionVerses (["why is planets big?","what is smalll"], ["4:7","3:4","3:3"])
 
 function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, confirmedArr, front) {
   // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
@@ -466,7 +473,7 @@ const confirmPattern = [
   /\b[0-9]{1,3}\s{0,5}:\s{0,5}[0-9]{1,3}/gi
 ]
 
-const multiVersePattern = /\s[0-9]{1,3}\s{0,5}:\s{0,5}[0-9]{1,3}\s{0,5}(-|to|and)\s{0,5}[0-9]{1,3}/gi
+// const multiVersePattern = /\s[0-9]{1,3}\s{0,5}:\s{0,5}[0-9]{1,3}\s{0,5}(-|to|and)\s{0,5}[0-9]{1,3}/gi
 
 // Pattern for names of surah and their chapter numbers
 // keep tigher pattern up, test it using https://en.wikipedia.org/wiki/List_of_chapters_in_the_Quran
