@@ -311,57 +311,6 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
   return []
 }
 
-// This will make the python 3 script run in multiple os environments
-// https://stackoverflow.com/questions/20643470/execute-a-command-line-binary-with-node-js
-// https://stackoverflow.com/a/35586247
-// https://medium.com/swlh/run-python-script-from-node-js-and-send-data-to-browser-15677fcf199f
-function runPyScript (pathToScript, args) {
-  // Using windows py to run python version 3
-  let output = spawnSync('py', ['-3', pathToScript].concat(args))
-  // Using python3 binary to run python version 3, if above fails
-  if (output.error) { output = spawnSync('python3', [pathToScript].concat(args)) }
-  // assuming python 3 is named as python in the system
-  if (output.error) { output = spawnSync('python', [pathToScript].concat(args)) }
-  if (output.error) { console.log('Either the translate script have failed or Python 3 might not be installed in the system') }
-
-  return output.stdout.toString()
-}
-
-// Takes a string & returns all the translations of a given query in an array
-// It could break anytime ,reasons include timeout, api broken etc
-function translateQuery (query) {
-  try {
-    const result = runPyScript('translateToMulti.py', [query])
-    return JSON.parse(result)
-  } catch (error) {
-    console.error(error)
-    return []
-  }
-}
-
-// Takes array of translated queries and confirmed verses & save to questionverses.min.json
-function saveQuestionVerses (query, verses) {
-// sort the passed verses
-  verses.sort()
-  const joinedVerses = verses.join(',')
-  //
-  let saved = false
-  for (let i = 0; i < questionVerses.values.length; i++) {
-  // Check verses exists, if exists then push the query in the questions array
-  // So that things are saved efficiently
-    if (questionVerses.values[i].verses.join(',') === joinedVerses) {
-      questionVerses.values[i].questions.push(...query)
-      saved = true
-      break
-    }
-  }
-  // if saved is still false, then push the new question & verses
-  if (saved === false) { questionVerses.values.push({ questions: query, verses: verses }) }
-
-  // Save the questionVerses back to filesystem
-  fs.writeFileSync(questionVersesPath, JSON.stringify(questionVerses))
-}
-
 function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, confirmedArr, front) {
   // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
   // Avoiding bugs like above
@@ -420,6 +369,59 @@ function getFromToArr (from, to) {
   for (let i = from; i <= to; i++) { tempArr = tempArr.concat(i) }
   return tempArr
 }
+
+
+// This will make the python 3 script run in multiple os environments
+// https://stackoverflow.com/questions/20643470/execute-a-command-line-binary-with-node-js
+// https://stackoverflow.com/a/35586247
+// https://medium.com/swlh/run-python-script-from-node-js-and-send-data-to-browser-15677fcf199f
+function runPyScript (pathToScript, args) {
+  // Using windows py to run python version 3
+  let output = spawnSync('py', ['-3', pathToScript].concat(args))
+  // Using python3 binary to run python version 3, if above fails
+  if (output.error) { output = spawnSync('python3', [pathToScript].concat(args)) }
+  // assuming python 3 is named as python in the system
+  if (output.error) { output = spawnSync('python', [pathToScript].concat(args)) }
+  if (output.error) { console.log('Either the translate script have failed or Python 3 might not be installed in the system') }
+
+  return output.stdout.toString()
+}
+
+// Takes a string & returns all the translations of a given query in an array
+// It could break anytime ,reasons include timeout, api broken etc
+function translateQuery (query) {
+  try {
+    const result = runPyScript('translateToMulti.py', [query])
+    return JSON.parse(result)
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+// Takes array of translated queries and confirmed verses & save to questionverses.min.json
+function saveQuestionVerses (query, verses) {
+// sort the passed verses
+  verses.sort()
+  const joinedVerses = verses.join(',')
+  //
+  let saved = false
+  for (let i = 0; i < questionVerses.values.length; i++) {
+  // Check verses exists, if exists then push the query in the questions array
+  // So that things are saved efficiently
+    if (questionVerses.values[i].verses.join(',') === joinedVerses) {
+      questionVerses.values[i].questions.push(...query)
+      saved = true
+      break
+    }
+  }
+  // if saved is still false, then push the new question & verses
+  if (saved === false) { questionVerses.values.push({ questions: query, verses: verses }) }
+
+  // Save the questionVerses back to filesystem
+  fs.writeFileSync(questionVersesPath, JSON.stringify(questionVerses))
+}
+
 // Creating line to [chapter,verseNo] mappings
 // Array containing number of verses in each chapters
 const chaplength = [7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52, 99, 128, 111, 110, 98, 135, 112, 78, 118, 64, 77, 227, 93, 88, 69, 60, 34, 30, 73, 54, 45, 83, 182, 88, 75, 85, 54, 53, 89, 59, 37, 35, 38, 29, 18, 45, 60, 49, 62, 55, 78, 96, 29, 22, 24, 13, 14, 11, 11, 18, 12, 12, 30, 52, 52, 44, 28, 28, 20, 56, 40, 31, 50, 40, 46, 42, 29, 19, 36, 25, 22, 17, 19, 26, 30, 20, 15, 21, 11, 8, 8, 19, 5, 8, 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6]
