@@ -2,10 +2,10 @@
 const searchQuery = 'what is the purpose of life'
 
 // Change link here based on UTC date, day of month
-const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com']
-
-// Set the link here using current date to avoid shutdown of dyno
-const corsHeroku = corsHerokuLinks[0]
+// Add another heroku link here
+const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com','https://immense-castle-88569.herokuapp.com']
+// Change from cc verified link to new heroku link from 11th day of month
+const corsHeroku = new Date().getUTCDate() > 10 ? corsHerokuLinks[0] : corsHerokuLinks[1]
 
 const corsCloudflare = 'https://square-bread-052d.fawazahmed0.workers.dev'
 
@@ -20,9 +20,10 @@ const editionsLink = apiLink + '/editions'
 const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json']
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e)
+// stores the translations
+let translationsArr = []
 
-// This will contain the optimized english translations
-const engTranslations = []
+const gestaltThreshold = 0.60
 
 // JSON containing already searched verses from node side
 const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/questionverses.min.json'
@@ -88,6 +89,11 @@ async function getGoogleLinks (searchQuery) {
 
   return links
 }
+// called only once
+async function initializer(){
+
+
+}
 
 // Takes input as htmlstring and return unique links in the htmlstring which starts with http
 function getLinksFromHTML (htmlString) {
@@ -101,11 +107,12 @@ function getLinksFromHTML (htmlString) {
 }
 
 // Fetches the translationLinks and returns the translations in optimized array form
+// Also assigns it to global translationsArr
 async function getTranslations (linksarr) {
   const transJSON = await getLinksJSON(linksarr)
-  return transJSON.map(e => e.quran.map(e => e.text)).map(e => qArrayOptimzer(e))
+  translationsArr = transJSON.map(e => e.quran.map(e => e.text)).map(e => qArrayOptimzer(e))
+  return translationsArr
 }
-
 // https://www.shawntabrizi.com/code/programmatically-fetch-multiple-apis-parallel-using-async-await-javascript/
 // Get links async i.e in parallel
 async function getLinksJSON (urls) {
@@ -174,20 +181,6 @@ async function corsCloudflareFetch (linksarr) {
   return result
 }
 
-// Creating line to [chapter,verseNo] mappings
-// Array containing number of verses in each chapters
-const chaplength = [7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52, 99, 128, 111, 110, 98, 135, 112, 78, 118, 64, 77, 227, 93, 88, 69, 60, 34, 30, 73, 54, 45, 83, 182, 88, 75, 85, 54, 53, 89, 59, 37, 35, 38, 29, 18, 45, 60, 49, 62, 55, 78, 96, 29, 22, 24, 13, 14, 11, 11, 18, 12, 12, 30, 52, 52, 44, 28, 28, 20, 56, 40, 31, 50, 40, 46, 42, 29, 19, 36, 25, 22, 17, 19, 26, 30, 20, 15, 21, 11, 8, 8, 19, 5, 8, 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6]
-// contains chapter verse mappings for each line
-const mappings = []
-const mappingsStr = []
-
-for (i = 1; i <= 114; i++) {
-  for (j = 1; j <= chaplength[i - 1]; j++) {
-    mappings.push([i, j])
-    mappingsStr.push(i + ',' + j)
-  }
-}
-
 // optimizes a flat array of 6236 length to optimized array
 // which can be accessed by arr[chap-1][verse-1]
 function qArrayOptimzer (arr) {
@@ -225,6 +218,179 @@ function saveToDB (data) {
   $('#searchquerytext').val(data)
   $('#searchqueryform').submit()
 }
+
+
+
+async function gestaltInference (parsedString) {
+  await getTranslations (translationLinks)
+  const numbers = Array.from(parsedString.matchAll(numberPattern)).filter(e => e[0] > 0 && e[0] <= 286)
+  let fullConfirmedArr = []
+  outerloop:
+  for (let i = 0; i < numbers.length; i++) {
+
+    for(var patt of goodPatterns){
+      let tempArr = []
+      const twoNum = numbers[i + 1] && numbers[i + 1].index - 15 < numbers[i].index
+
+     if(new RegExp(patt).test(parsedString.substring(numbers[i].index-15, numbers[i].index + 15))  && twoNum ) {
+
+    // assuming chapter number multi verse
+    if (new RegExp(multiVersePattern).test(parsedString.substring(numbers[i].index-15, numbers[i].index + 15)) ) {
+
+       tempArr = getGestaltMultiArr(numbers[i][0], numbers[i + 1][0], numbers[i + 2][0], numbers[i].index, parsedString, fullConfirmedArr)
+      
+            // chapter Number, verse1 to verse2 pattern
+     
+
+       if(tempArr.length==0)
+      tempArr = getGestaltMultiArr(numbers[i][0], numbers[i + 1][0], numbers[i + 2][0], numbers[i].index, parsedString, fullConfirmedArr, true)
+          
+      
+
+
+        }
+    // if number exists next to this number i.e within 15 chars
+    // assuming chapter verse pattern and verse chapter pattern
+      // assuming chapter verse pattern
+      if(tempArr.length==0)
+      tempArr = getGestaltArr(numbers[i][0], numbers[i + 1][0], numbers[i].index, parsedString, fullConfirmedArr)
+  
+      if(tempArr.length==0)
+      tempArr = getGestaltArr(numbers[i][0], numbers[i + 1][0], numbers[i].index, parsedString, fullConfirmedArr, true)
+      fullConfirmedArr = fullConfirmedArr.concat(tempArr)
+
+
+  }
+
+       // Remove the next numbers if they are within 10 characters of this confirmed pattern
+      // we don't want to waste time
+      if(tempArr.length>0){
+       // Remove the next numbers if they are within 10 characters of this confirmed pattern
+      // we don't want to waste time
+      temp=i
+      for(var j=temp+1;j<temp+10;j++)
+          {
+            if(numbers[j]&&numbers[j].index-15<numbers[temp].index)
+              i++
+            else
+              break;
+          }
+          break
+        }
+
+}
+}
+  return fullConfirmedArr
+}
+
+// Returns gestalt ratio between two given string
+function getGestaltRatio (str1, str2) {
+  return new difflib.SequenceMatcher(null, str1, str2).ratio()
+}
+
+// Returns gestalt ratio between two given string is above a given threshold or not
+function checkGestaltRatio (str1, str2) {
+  return getGestaltRatio(str1, str2) > gestaltThreshold
+}
+
+
+
+// Takes chapterNo  VerseNo and content and compares both of them
+// Returns verse in an array if the ratio is more than a given threshold
+// confirmedArr has to be cleaned for each new question query search to avoid bugs
+function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front) {
+  // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
+  // Avoiding bugs like above
+  chapter = parseInt(chapter)
+  verse = parseInt(verse)
+  index = parseInt(index)
+  let content
+  const slack = 20
+
+  // return with empty array if chap verse doesn't exist or chap verse already exists in confirmedArr
+  if (chapter > CHAPTER_LENGTH || !translationsArr[0][chapter - 1][verse - 1]) { return [] }
+  // return the same chapter & verse if they already exists, help to pass for multiVerse checks
+  if (confirmedArr.includes(chapter + ',' + verse)) { return [chapter + ',' + verse] }
+
+  for (const translation of translationsArr) {
+    const verseStr = translation[chapter - 1][verse - 1]
+    // verselength is 120 percent of original length
+    const verseLen = verseStr.length * 1.2
+    if (front) {
+      content = parsedString.substring(index - slack, index + verseLen)
+    //  content = cleanPatterns(content, true)
+    } else {
+      content = parsedString.substring(index - verseLen, index + slack)
+    //  content = cleanPatterns(content)
+    }
+    if (checkGestaltRatio(verseStr, content)) {
+      return [chapter + ',' + verse]
+    }
+  }
+
+  return []
+}
+
+function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, confirmedArr, front) {
+  // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
+  // Avoiding bugs like above
+  chapter = parseInt(chapter)
+  verseFrom = parseInt(verseFrom)
+  verseTo = parseInt(verseTo)
+  index = parseInt(index)
+
+  if (chapter > CHAPTER_LENGTH || !translationsArr[0][chapter - 1][verseTo - 1] || verseFrom >= verseTo ||
+    // return if the multiverse is huge is size
+    translationsArr[0][chapter - 1].slice(verseFrom - 1, verseTo).map(e => e.length).reduce((full, e) => full + e) > 1500) { return [] }
+
+  // stores the chapter,verse
+  let subConfirmedArr = []
+  let backIndex = index
+  let frontIndex = index
+
+  for (let i = verseFrom; i <= verseTo; i++) {
+    if (front) {
+      subConfirmedArr = subConfirmedArr.concat(getGestaltArr(chapter, i, frontIndex, parsedString, confirmedArr, true))
+      frontIndex = frontIndex + translationsArr[0][chapter - 1][i - 1].length
+    } else {
+      subConfirmedArr = subConfirmedArr.concat(getGestaltArr(chapter, i, backIndex, parsedString, confirmedArr))
+      backIndex = backIndex - translationsArr[0][chapter - 1][i - 1].length
+    }
+    // Pass all the multiVerse, if atleast 1 passes in back pattern
+    // or if other than first verse passes in front pattern
+    // and combined verse length should be less than 600
+
+    if (((subConfirmedArr.length > 0 && !front) || (front && subConfirmedArr.filter(e => e !== chapter + ',' + verseFrom).length > 0)) &&
+       translationsArr[0][chapter - 1].slice(verseFrom - 1, verseTo).map(e => e.length).reduce((full, e) => full + e) < 600
+    ) { return getFromToArr(verseFrom, verseTo).map(e => chapter + ',' + e) }
+  }
+  return subConfirmedArr
+}
+
+// Takes from and to as args and returns array with incremental elements starting wtih from and ending with to
+function getFromToArr (from, to) {
+  let tempArr = []
+  for (let i = from; i <= to; i++) { tempArr = tempArr.concat(i) }
+  return tempArr
+}
+
+
+
+
+// Creating line to [chapter,verseNo] mappings
+// Array containing number of verses in each chapters
+const chaplength = [7, 286, 200, 176, 120, 165, 206, 75, 129, 109, 123, 111, 43, 52, 99, 128, 111, 110, 98, 135, 112, 78, 118, 64, 77, 227, 93, 88, 69, 60, 34, 30, 73, 54, 45, 83, 182, 88, 75, 85, 54, 53, 89, 59, 37, 35, 38, 29, 18, 45, 60, 49, 62, 55, 78, 96, 29, 22, 24, 13, 14, 11, 11, 18, 12, 12, 30, 52, 52, 44, 28, 28, 20, 56, 40, 31, 50, 40, 46, 42, 29, 19, 36, 25, 22, 17, 19, 26, 30, 20, 15, 21, 11, 8, 8, 19, 5, 8, 8, 11, 11, 8, 3, 9, 5, 4, 7, 3, 6, 3, 5, 4, 5, 6]
+// contains chapter verse mappings for each line
+const mappings = []
+const mappingsStr = []
+
+for (i = 1; i <= 114; i++) {
+  for (j = 1; j <= chaplength[i - 1]; j++) {
+    mappings.push([i, j])
+    mappingsStr.push(i + ',' + j)
+  }
+}
+
 
 // Have to use multiple english translations to get all the results
 // Refer https://en.wikipedia.org/wiki/Biblical_canon  to add more names
@@ -727,3 +893,5 @@ parsedString = htmlToString(bigstr)
 lunrInferenceVerses(parsedString)
 tensorInference(lunrConfirmedVerse)
 */
+parsedString = htmlToString(bigstr)
+gestaltInference (parsedString).then(console.log)
