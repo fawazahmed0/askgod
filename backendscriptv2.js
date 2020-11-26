@@ -92,8 +92,8 @@ async function getLinksJSON (urls) {
 // Takes links array to be fetched and returns merged html of all links
 // Usually getGoogleLinks() result is passed in here
 async function linksFetcher (linksarr) {
-  let val = await Promise.allSettled(linksarr.map(e => linkFetcher(e)))
-  val = val.map(e => e.value ? e.value : '')
+  let val = await Promise.all(linksarr.map(e => linkFetcher(e)))
+  // val = val.map(e => e.value ? e.value : '')
   return val.reduce((full, curr) => full + curr)
 }
 
@@ -161,10 +161,17 @@ async function inference () {
   for (const query of cleanSearchArr) {
     // Launch the browser
     await launchBrowser()
-    // Stores the links we got from google search
+    try {
+          // Stores the links we got from google search
     const linksarr = await getGoogleLinks(query + ' in quran')
     // stores the  html string for all the links we got from previous google search step
     const htmlStr = await linksFetcher(linksarr)
+      
+    } catch (error) {
+      console.log("Ignore query as link fetching wansn't successful, query is ",query)
+      console.error(error)
+      continue  
+    }
     // stores the parsed html string
     const parsedStr = htmlToString(htmlStr)
     // Close the browsers to save resources , so gestalt can get more resources
