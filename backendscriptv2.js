@@ -17,6 +17,8 @@ let context
 // Allows closing of browser from anywhere
 let browser
 
+const pageTimeOut = 120000
+
 // Number of verses in quran
 // const VERSE_LENGTH = 6236
 
@@ -35,6 +37,8 @@ const googleSearchLink = 'https://www.google.com/search?&q='
 
 const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
 const editionsLink = apiLink + '/editions'
+// Eigthy questions to search at a time to avoid 6 hours actions time limit
+const noOfQues = 80
 
 // Read the already inferred question & it's verses
 const questionVersesPath = path.join(__dirname, 'questionverses.min.json')
@@ -44,7 +48,7 @@ const questionVerses = JSON.parse(questionVersesStr)
 // const googleCodesLink = apiLink + '/isocodes/google-codes.min.json'
 
 //  english translation editions to use in lunr
-const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json','eng-mohammedmarmadu.min.json']
+const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json', 'eng-mohammedmarmadu.min.json', 'eng-maududi.min.json']
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e)
 
@@ -62,11 +66,12 @@ async function getDBArray () {
 
 // Cleans the searched questions retrieved from google forms from already added question in questionVerses json
 // To avoid doing inference for questions which were already inferred in questionVerses json
+// Doesn't return complete array, only first 80 elems of cleanArr
 async function getCleanDBArray () {
   const searchArr = await getDBArray()
   const fullQuestionsArr = questionVerses.values.map(e => e.questions).flat().map(e => e.toLowerCase())
   const cleanArr = searchArr.filter(e => !fullQuestionsArr.includes(e.toLowerCase()))
-  return [...new Set(cleanArr.map(e=>e.trim()))]
+  return [...new Set(cleanArr.map(e => e.trim()))].slice(0, noOfQues)
 }
 
 // Fetches the translationLinks and returns the translations in optimized array form
@@ -88,13 +93,13 @@ async function getLinksJSON (urls) {
 // Usually getGoogleLinks() result is passed in here
 async function linksFetcher (linksarr) {
   let val = await Promise.allSettled(linksarr.map(e => linkFetcher(e)))
-  val = val.map(e=>e.value?e.value:"")
+  val = val.map(e => e.value ? e.value : '')
   return val.reduce((full, curr) => full + curr)
 }
 
 async function linkFetcher (link) {
   const page = await context.newPage()
-  await page.goto(link, { timeout: 120000 })
+  await page.goto(link, { timeout: pageTimeOut })
   return await page.evaluate(() => {
     // Remove few tags from html as they don't parse well
     function removeTag (tag) {
@@ -121,9 +126,8 @@ async function getGoogleLinks (query) {
   // This should be kept somewhere else
   const page = await context.newPage()
   await page.goto(googleSearchLink + encodeURIComponent(query), {
-    timeout: 60000
+    timeout: pageTimeOut
   })
-  // await browser.close();
 
   let hrefs = await page.evaluate(() => {
     return Array.from(document.links).map(item => item.href + '')
@@ -149,31 +153,33 @@ function htmlToString (htmlString) {
 
 // Begins inference
 async function inference () {
-
   // Get clean questions array, with duplicates removed
-  // Launch the browser
+
   // Get all the translations
-  const [cleanSearchArr, , ] = await Promise.all([getCleanDBArray(), launchBrowser(), getTranslations(translationLinks)])
+  const [cleanSearchArr] = await Promise.all([getCleanDBArray(), getTranslations(translationLinks)])
 
   for (const query of cleanSearchArr) {
+    // Launch the browser
+    await launchBrowser()
     // Stores the links we got from google search
     const linksarr = await getGoogleLinks(query + ' in quran')
     // stores the  html string for all the links we got from previous google search step
     const htmlStr = await linksFetcher(linksarr)
     // stores the parsed html string
     const parsedStr = htmlToString(htmlStr)
+    // Close the browsers to save resources , so gestalt can get more resources
+    await browser.close()
 
     let confirmedVerses = await gestaltInference(parsedStr)
     // Remove duplicates
     confirmedVerses = [...new Set(confirmedVerses)]
     let translatedQueryArr = translateQuery(query).concat(query)
+
     // Remove duplicates
-    translatedQueryArr = [...new Set(translatedQueryArr.map(e=>e.trim()))]
+    translatedQueryArr = [...new Set(translatedQueryArr.map(e => e.trim()))]
     // save the query & confirmed verses in JSON
     saveQuestionVerses(translatedQueryArr, confirmedVerses)
   }
-
-  await browser.close()
 }
 
 // Call inference, main function
@@ -195,7 +201,6 @@ function qArrayOptimzer (arr) {
 }
 
 async function gestaltInference (parsedString) {
-
   const numbers = Array.from(parsedString.matchAll(numberPattern)).filter(e => e[0] > 0 && e[0] <= 286)
   let fullConfirmedArr = []
 
@@ -275,23 +280,24 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
   const slack = 20
 
   // return with empty array if chap verse doesn't exist or chap verse already exists in confirmedArr
-  if (chapter > CHAPTER_LENGTH || !translationsArr[0][chapter - 1][verse - 1] )
- { return [] }
-
- if(confirmedArr.includes(chapter + ',' + verse))
-    return [chapter + ',' + verse]
+  if (chapter > CHAPTER_LENGTH || !translationsArr[0][chapter - 1][verse - 1]) { return [] }
+  // return the same chapter & verse if they already exists, help to pass for multiVerse checks
+  if (confirmedArr.includes(chapter + ',' + verse)) { return [chapter + ',' + verse] }
 
   for (const translation of translationsArr) {
     const verseStr = translation[chapter - 1][verse - 1]
-    const verseLen = verseStr.length
+    // verselength is 120 percent of original length
+    const verseLen = verseStr.length * 1.2
     if (front) {
-      content = parsedString.substring(index - slack, index + verseLen+15)
+      content = parsedString.substring(index - slack, index + verseLen)
     //  content = cleanPatterns(content, true)
     } else {
-      content = parsedString.substring(index - verseLen-15, index + slack)
+      content = parsedString.substring(index - verseLen, index + slack)
     //  content = cleanPatterns(content)
     }
-    if (checkGestaltRatio(verseStr, content)) { return [chapter + ',' + verse] }
+    if (checkGestaltRatio(verseStr, content)) {
+      return [chapter + ',' + verse]
+    }
   }
 
   return []
@@ -348,7 +354,6 @@ function saveQuestionVerses (query, verses) {
   fs.writeFileSync(questionVersesPath, JSON.stringify(questionVerses))
 }
 
-
 function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, confirmedArr, front) {
   // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
   // Avoiding bugs like above
@@ -384,7 +389,7 @@ function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, c
   }
   return subConfirmedArr
 }
-
+/*
 // Remove the numbers, patterns such as 3:4 ,etc from the given string
 // And return the cleaned one
 // Also remove  alphanumeric chars, removing all punctuations , double whitespaces
@@ -400,7 +405,7 @@ function cleanPatterns (str, front) {
 
   return str.split(/\s/).slice(1, -1).join(' ').replace(/[^A-Z\s]|_/gi, ' ').replace(/\s\s+/g, ' ').trim()
 }
-
+*/
 // Takes from and to as args and returns array with incremental elements starting wtih from and ending with to
 function getFromToArr (from, to) {
   let tempArr = []
@@ -420,7 +425,7 @@ for (let i = 1; i <= 114; i++) {
     mappingsStr.push(i + ',' + j)
   }
 }
-
+/*
 // Matches quran, surah, ayah, names of surah etc
 const confirmPattern = [
   /\b(q|k)(u|o)r.{1,4}n/gi,
@@ -431,7 +436,7 @@ const confirmPattern = [
   /\b[0-9]{1,3}\s{0,5}:\s{0,5}[0-9]{1,3}\s{0,5}(-|to|and)\s{0,5}[0-9]{1,3}/gi,
   /\b[0-9]{1,3}\s{0,5}:\s{0,5}[0-9]{1,3}/gi
 ]
-
+*/
 // const multiVersePattern = /\s[0-9]{1,3}\s{0,5}:\s{0,5}[0-9]{1,3}\s{0,5}(-|to|and)\s{0,5}[0-9]{1,3}/gi
 
 // Pattern for names of surah and their chapter numbers
@@ -834,9 +839,8 @@ const englishQuranName = [
 
 ]
 
-const tempPatternArr = confirmPattern.map(e => e.source).concat(arabicQuranName.map(e => e[0].source))
+// const tempPatternArr = confirmPattern.map(e => e.source).concat(arabicQuranName.map(e => e[0].source))
 // This stores the pattern to clean verse patterns etc from string
-const cleanStrPattern = new RegExp('(' + tempPatternArr.reduce((full, val) => full + '|' + val) + ')')
+// const cleanStrPattern = new RegExp('(' + tempPatternArr.reduce((full, val) => full + '|' + val) + ')')
 
 const arabicEnglishQuranName = arabicQuranName.concat(englishQuranName)
-// test()
