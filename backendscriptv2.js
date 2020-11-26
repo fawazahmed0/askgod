@@ -57,8 +57,6 @@ async function getDBArray () {
   const dbText = await fetch(dbJSONLink).then(response => response.text()).catch(console.error)
   const dbJSON = JSON.parse(dbText.match(/(?<=.*\().*(?=\);)/s)[0])
   const column = 1
-  // console.log(JSON.stringify(dbJSON.table.rows.map(e=>e.c[column].v)))
-
   return dbJSON.table.rows.map(e => e.c[column].v)
 }
 
@@ -67,7 +65,8 @@ async function getDBArray () {
 async function getCleanDBArray () {
   const searchArr = await getDBArray()
   const fullQuestionsArr = questionVerses.values.map(e => e.questions).flat().map(e => e.toLowerCase())
-  return searchArr.filter(e => !fullQuestionsArr.includes(e.toLowerCase()))
+  const cleanArr = searchArr.filter(e => !fullQuestionsArr.includes(e.toLowerCase()))
+  return [...new Set(cleanArr.map(e=>e.trim()))]
 }
 
 // Fetches the translationLinks and returns the translations in optimized array form
@@ -88,25 +87,14 @@ async function getLinksJSON (urls) {
 // Takes links array to be fetched and returns merged html of all links
 // Usually getGoogleLinks() result is passed in here
 async function linksFetcher (linksarr) {
-  const val = await Promise.all(linksarr.map(e => linkFetcher(e)))
-
-  //  for (const link of linksarr) {
-
-  //   tempHTML = tempHTML + linkFetcher(link)
-
-  //  tempStr = tempStr+ await page.evaluate(() => $(document).find("script,style").remove().end().text());
-  // }
-  // removing css,html,links,ISBN,17+ character length,multiple spaces from str to narrow down the search
-  // tempStr = tempStr.replace(/<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/gi," ").replace(/<([A-Z][A-Z0-9]*)>.*?<\/\1>/gi," ").replace(/<([A-Z][A-Z0-9]*)\b[^>]*\/?>(.*?)/gi," ").replace(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi," ").replace(/(?<=\s)[^ ]*\s*\{[^\}]+\:[^\}]+\}/gi," ").replace(/[^\s]{17,}/gi," ").replace(/\d{4,}/gi," ").replace(/\s\s+/g, " ")
-  // tempStr = await page.evaluate(() => $(document).find("script,style").remove().end().text());
-
+  let val = await Promise.allSettled(linksarr.map(e => linkFetcher(e)))
+  val = val.map(e=>e.value?e.value:"")
   return val.reduce((full, curr) => full + curr)
 }
 
 async function linkFetcher (link) {
   const page = await context.newPage()
-  await page.goto(link, { timeout: 60000 })
-  //  await page.addScriptTag({url: 'https://code.jquery.com/jquery-3.5.1.min.js'})
+  await page.goto(link, { timeout: 120000 })
   return await page.evaluate(() => {
     // Remove few tags from html as they don't parse well
     function removeTag (tag) {
@@ -120,20 +108,13 @@ async function linkFetcher (link) {
   })
 }
 
-// Tested
-// linksFetcher(['https://stackoverflow.com/questions/28123687/extract-visible-text-from-all-elements-in-chrome-browser-using-javascript','https://www.npmjs.com/package/jquery']).then(console.log)
-
-// Page and browser is a global variable and it can be accessed from anywhere
+// context and browser is a global variable and it can be accessed from anywhere
 // function that launches a browser
 async function launchBrowser () {
   browser = await firefox.launch({
     headless: false
   })
   context = await browser.newContext()
-
-  // Load jquery in the page
-  // later remove this after fix, https://github.com/microsoft/playwright/issues/4284
-  //  await page.addInitScript(fs.readFileSync('jquery-3.5.1.min.js', 'utf8'));
 }
 
 async function getGoogleLinks (query) {
@@ -159,12 +140,6 @@ async function getGoogleLinks (query) {
 
 // Takes html as input and returns regex cleaned string
 function htmlToString (htmlString) {
-  // await page.addScriptTag({url: 'https://code.jquery.com/jquery-3.5.1.min.js'})
-  // convert html to string
-
-  //  str = await page.evaluate(() => {
-  //    return $.parseHTML(htmlString).reduce((full, val) => full+" "+val.textContent)
-  //  });
   let str = $.parseHTML(htmlString).reduce((full, val) => full + ' ' + val.textContent)
   // removing css,html,links,ISBN,17+ character length,multiple spaces from str to narrow down the search
   str = str.replace(/<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/gi, ' ').replace(/<([A-Z][A-Z0-9]*)>.*?<\/\1>/gi, ' ').replace(/<([A-Z][A-Z0-9]*)\b[^>]*\/?>(.*?)/gi, ' ').replace(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi, ' ').replace(/(?<=\s)[^ ]*\s*\{[^\}]+\:[^\}]+\}/gi, ' ').replace(/[^\s]{17,}/gi, ' ').replace(/\d{4,}/gi, ' ').replace(/\s\s+/g, ' ')
@@ -174,12 +149,16 @@ function htmlToString (htmlString) {
 
 // Begins inference
 async function inference () {
-  // Note we have to clean the array before wasting resources for already embedded queries
-  const cleanSearchArr = await getCleanDBArray()
+  // const cleanSearchArr = await getCleanDBArray()
+
+  //  await launchBrowser()
+
+  //  await getTranslations(translationLinks)
+
+  // Get clean questions array, with duplicates removed
   // Launch the browser
-  await launchBrowser()
   // Get all the translations
-  await getTranslations(translationLinks)
+  const [cleanSearchArr, , ] = await Promise.all([getCleanDBArray(), launchBrowser(), getTranslations(translationLinks)])
 
   for (const query of cleanSearchArr) {
     // Stores the links we got from google search
@@ -189,39 +168,20 @@ async function inference () {
     // stores the parsed html string
     const parsedStr = htmlToString(htmlStr)
 
-    //   const bigstr = fs.readFileSync(path.join(__dirname, 'notehtmlstr')).toString()
-    //   const parsedStr = htmlToString(bigstr)
-
-    // Get numbers in parsedString
-    //  const numbers = Array.from(parsedStr.matchAll(numberPattern)).filter(e => e[0] > 0 && e[0] <= 286)
     let confirmedVerses = await gestaltInference(parsedStr)
     // Remove duplicates
     confirmedVerses = [...new Set(confirmedVerses)]
-    let translatedQueryArr
-    try {
-      translatedQueryArr = translateQuery(query).concat(query)
-    } catch (error) {
-      console.error(error)
-      translatedQueryArr = [query]
-    }
+    let translatedQueryArr = translateQuery(query).concat(query)
     // Remove duplicates
-    translatedQueryArr = [...new Set(translatedQueryArr)]
-
+    translatedQueryArr = [...new Set(translatedQueryArr.map(e=>e.trim()))]
+    // save the query & confirmed verses in JSON
     saveQuestionVerses(translatedQueryArr, confirmedVerses)
-
-    // let testarr = []
-    // console.log(verseLenArr['0'])
-    // for (let i = 0; i < numbers.length - 2; i++) {
-    // testarr = testarr.concat(getGestaltMultiArr(numbers[i][0], numbers[i + 1][0],numbers[i + 2][0], numbers[i].index, parsedStr,testarr))
-    // testarr = testarr.concat(getChapMultiVerStrArr(numbers[i][0],numbers[i+1][0],numbers[i+2][0],numbers[i].index, parsedStr))
   }
-  // testarr = testarr.filter(e=>lunrSearchCheck(lunrIndexArr[e[0].split(',')[0]-1][e[0].split(',')[1]-1],e[1]))
-  // testarr = testarr.map(e => e.concat(lunrSearchCheck(lunrIndexArr[e[0].split(',')[0] - 1][e[0].split(',')[1] - 1], e[1])))
-
-  // fs.writeFileSync('testarr', JSON.stringify(testarr, null, 4))
 
   await browser.close()
 }
+
+// Call inference, main function
 inference()
 
 // optimizes a flat array of 6236 length to optimized array
@@ -310,7 +270,6 @@ function checkGestaltRatio (str1, str2) {
 }
 
 // Takes chapterNo  VerseNo and content and compares both of them
-// shoudn't waste time on what's already exist
 // Returns verse in an array if the ratio is more than a given threshold
 // confirmedArr has to be cleaned for each new question query search to avoid bugs
 function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front) {
@@ -361,8 +320,13 @@ function runPyScript (pathToScript, args) {
 // Takes a string & returns all the translations of a given query in an array
 // It could break anytime ,reasons include timeout, api broken etc
 function translateQuery (query) {
-  const result = runPyScript('translateToMulti.py', [query])
-  return JSON.parse(result)
+  try {
+    const result = runPyScript('translateToMulti.py', [query])
+    return JSON.parse(result)
+  } catch (error) {
+    console.error(error)
+    return []
+  }
 }
 
 // Takes array of translated queries and confirmed verses & save to questionverses.min.json
@@ -388,7 +352,6 @@ function saveQuestionVerses (query, verses) {
   fs.writeFileSync(questionVersesPath, JSON.stringify(questionVerses))
 }
 
-// saveQuestionVerses (["why is planets big?","what is smalll"], ["4:7","3:4","3:3"])
 
 function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, confirmedArr, front) {
   // Parsing the strings to int ,as in case of comparsion like "17">"2"-> false as both are string
