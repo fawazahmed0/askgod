@@ -225,56 +225,48 @@ async function gestaltInference (parsedString) {
   await getTranslations (translationLinks)
   const numbers = Array.from(parsedString.matchAll(numberPattern)).filter(e => e[0] > 0 && e[0] <= 286)
   let fullConfirmedArr = []
-  outerloop:
+
   for (let i = 0; i < numbers.length; i++) {
 
     for(var patt of goodPatterns){
       let tempArr = []
+      // if number exists next to this number i.e within 15 chars
       const twoNum = numbers[i + 1] && numbers[i + 1].index - 15 < numbers[i].index
 
      if(new RegExp(patt).test(parsedString.substring(numbers[i].index-15, numbers[i].index + 15))  && twoNum ) {
 
     // assuming chapter number multi verse
     if (new RegExp(multiVersePattern).test(parsedString.substring(numbers[i].index-15, numbers[i].index + 15)) ) {
-
+         // chapter Number, verse1 to verse2 pattern
        tempArr = getGestaltMultiArr(numbers[i][0], numbers[i + 1][0], numbers[i + 2][0], numbers[i].index, parsedString, fullConfirmedArr)
-      
-            // chapter Number, verse1 to verse2 pattern
-     
 
        if(tempArr.length==0)
       tempArr = getGestaltMultiArr(numbers[i][0], numbers[i + 1][0], numbers[i + 2][0], numbers[i].index, parsedString, fullConfirmedArr, true)
-          
-      
-
 
         }
-    // if number exists next to this number i.e within 15 chars
-    // assuming chapter verse pattern and verse chapter pattern
+    
       // assuming chapter verse pattern
       if(tempArr.length==0)
       tempArr = getGestaltArr(numbers[i][0], numbers[i + 1][0], numbers[i].index, parsedString, fullConfirmedArr)
-  
       if(tempArr.length==0)
       tempArr = getGestaltArr(numbers[i][0], numbers[i + 1][0], numbers[i].index, parsedString, fullConfirmedArr, true)
-      fullConfirmedArr = fullConfirmedArr.concat(tempArr)
-
 
   }
 
-       // Remove the next numbers if they are within 10 characters of this confirmed pattern
+      // Remove the next numbers if they are within 10 characters of this confirmed pattern
       // we don't want to waste time
       if(tempArr.length>0){
-       // Remove the next numbers if they are within 10 characters of this confirmed pattern
-      // we don't want to waste time
-      temp=i
-      for(var j=temp+1;j<temp+10;j++)
+    // Add the confirmed verses
+      fullConfirmedArr = fullConfirmedArr.concat(tempArr)
+      let temp=i
+      for(let j=temp+1;j<temp+10;j++)
           {
             if(numbers[j]&&numbers[j].index-15<numbers[temp].index)
               i++
             else
               break;
           }
+          // break pattern loop
           break
         }
 
