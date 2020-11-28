@@ -32,6 +32,8 @@ let questionVerses
   // Easier to Understand editions
   let preferredEditions = {'Arabic':'ara-sirajtafseer','English':'eng-safikaskas','Urdu':'urd-abulaalamaududi'}
 
+  // Stores the current confirmed Verses
+let gloConfirmedVerses = [];
 
 // Number of verses in quran
 // const VERSE_LENGTH = 6236
@@ -1052,15 +1054,16 @@ async function beginSearch () {
   // Get search query value
   const searchQuery = document.getElementById('searchquery').value
   if (searchQuery === '') { return }
-
-  // Add spinning wheel
-  $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
-<div class="spinner-border m-5" role="status">
-<span class="visually-hidden">Loading...</span>
-</div> </div>`)
-
+// Show as loading
+// Add spinning wheel
+      $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
+      <div class="spinner-border m-5" role="status">
+      <span class="visually-hidden">Loading...</span>
+      </div> </div>`)
   // Fetch verses
   const confirmedVerses = await getInferredVerses(searchQuery)
+ // store the confirmed verses in globally accessible variable
+  gloConfirmedVerses = confirmedVerses
   console.log(confirmedVerses)
   // Show the result in the page
   await showResult(confirmedVerses)
@@ -1068,19 +1071,21 @@ async function beginSearch () {
 
 async function showResult (verses) {
   // Form link according to selected language
-  let linkFormed = editionsLink+$('#langdropdown').val().trim()+'.min.json'
+  let linkFormed = editionsLink+'/'+$('#langdropdown').val().trim()+'.min.json'
   const [translation] = await getTranslations([linkFormed])
-  console.log('translation is ',translation)
   // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
   verses = verses.map(e => e.split(',').map(e => parseInt(e)))
+  if(verses.length>0){
   // remove the old verses and spinning wheel etc
   $('#versescolumn').empty()
   // Add the card element, so verses get shown in cards
   $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
+  
 
   for (const [chap, ver] of verses) {
-    $('#verseslist').append('<li class="list-group-item p-2">' + translation[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
+    $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + translation[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
   }
+}
 }
 
 // Creates and add listing to the dropdown based on editions.json
@@ -1102,9 +1107,9 @@ function createDropdown () {
   for (const [key, value] of Object.entries(dropdownObj)) {
     const editionKey = value.replaceAll('-', '_')
 
-    if (editionsJSON[editionKey + '_lad']) { dropdownObj[key + ' LatinD'] = editionKey + '_lad' }
+    if (editionsJSON[editionKey + '_lad']) { dropdownObj[key + ' LatinD'] = value + '-lad' }
 
-    if (editionsJSON[editionKey + '_la']) { dropdownObj[key + ' Latin'] = editionKey + '_la' }
+    if (editionsJSON[editionKey + '_la']) { dropdownObj[key + ' Latin'] = value + '-la' }
   }
 
   const sortedDropDown = sortObjByKeys(dropdownObj)
