@@ -14,11 +14,13 @@ const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
 const editionsLink = apiLink + '/editions'
 
 //  english translation editions to use in lunr
-const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json', 'eng-mohammedmarmadu.min.json', 'eng-maududi.min.json', 'eng-safikaskas.min.json', 'eng-wahiduddinkhan.min.json', 'eng-ajarberry.min.json']
+const editionNames = ['eng-ummmuhammad', 'eng-abdullahyusufal', 'eng-muhammadtaqiudd', 'eng-mohammedmarmadu', 'eng-maududi', 'eng-safikaskas', 'eng-wahiduddinkhan', 'eng-ajarberry']
 // Contains english translation links to use in lunr
-const translationLinks = editionNames.map(e => editionsLink + '/' + e)
+const translationLinks = editionNames.map(e => editionsLink + '/' + e + '.min.json')
 // stores the translations
 let translationsArr
+
+let editionsJSON
 
 const gestaltThreshold = 0.60
 
@@ -44,11 +46,14 @@ async function initializer () {
   // Get the Translations
   translationsArr = await getTranslations(translationLinks);
   // Stores the question verses JSON
-  [questionVerses] = await getLinksJSON([questionVerseLink])
-
+  [questionVerses] = await getLinksJSON([questionVerseLink]);
+  // Editions JSON from quran api
+  [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
   // This func is called only once, next time it is just an empty block of code
   // Setup Google Forms as DB
   setupDB()
+  // Create the dropdown
+  createDropdown()
 }
 
 // Return english translated text for the given string
@@ -1072,56 +1077,41 @@ async function showResult (verses) {
   }
 }
 
+// Creates and add listing to the dropdown based on editions.json
+function createDropdown () {
+  const dropdownObj = {}
+  // Default lang to select
+  const DefaultLang = 'English'
 
-async function createDropdown(){
+  for (const [key, value] of Object.entries(editionsJSON)) {
+    dropdownObj[value.language] = value.name
+  }
 
-  const [editions] = await getLinksJSON(['https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions.min.json'])
+  // Preferred Editions as they are easier to understand
+  dropdownObj.Arabic = 'ara-sirajtafseer'
+  dropdownObj.English = 'eng-safikaskas'
+  dropdownObj.Urdu = 'urd-abulaalamaududi'
 
-let dropdownObj = {}
+  // add lang+latin key if edition exists
+  for (const [key, value] of Object.entries(dropdownObj)) {
+    const editionKey = value.replaceAll('-', '_')
 
-  for(let [key,value] of Object.entries(editions)){
-    dropdownObj[value.language] = {}
+    if (editionsJSON[editionKey + '_lad']) { dropdownObj[key + ' LatinD'] = editionKey + '_lad' }
 
-    dropdownObj[value.language]['id'] = key
-    dropdownObj[value.language]['name'] = value.name
+    if (editionsJSON[editionKey + '_la']) { dropdownObj[key + ' Latin'] = editionKey + '_la' }
+  }
 
+  const sortedDropDown = sortObjByKeys(dropdownObj)
 
+  for (const [key, value] of Object.entries(sortedDropDown)) {
+    { $('#langdropdown').append('<option value="' + value + '">' + key + '</option>') }
+  }
 
-
+  // If cookies are set then use that to set language, else set to English as default
+  $('#langdropdown option').filter(function () {
+    return ($(this).text() === DefaultLang) // To select Blue
+  }).prop('selected', true)
 }
-let sortedobj = sortObjByKeys (dropdownObj)
-
-// Here replace with any hardcoded editions to use
-sortedobj['Arabic']  = {'id':'ara_sirajtafseer','name':'ara-sirajtafseer' }
-sortedobj['English']  = {'id':'eng_safikaskas','name':'eng-safikaskas' }
-sortedobj['Urdu']  ={ "id":'urd_abulaalamaududi' ,'name':'urd-abulaalamaududi' }
-
-// add lang+latin key if edition exists
-
-for(let [key,value] of Object.entries(sortedobj)){
-
-  if(editions[value.id+'_lad'])
-  sortedobj[key+' LatinD'] = value.id+'_lad'
-
-  if(editions[value.id+'_la'])
-  sortedobj[key+' Latin'] = value.id+'_la'
-
-}
-
-sortedobj = sortObjByKeys (sortedobj) 
-
-
-for(let [key,value] of Object.entries(sortedobj)){
-  if(key==='English')
-  $('#langdropdown').append('<option value="'+value.name+'"selected>'+key+'</option>')
-else
-$('#langdropdown').append('<option value="'+value.name+'">'+key+'</option>')
-
-}
-
-
-}
-createDropdown()
 
 // Sorts an object by keys and returns the sorted object
 function sortObjByKeys (obj) {
