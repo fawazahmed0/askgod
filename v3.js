@@ -81,7 +81,7 @@ async function getInferredVerses (query) {
   await initVar
   // Return already existing verses  in questionVerses.json
   const savedVerses = await getQueryVerses(query)
-  if (savedVerses.length > 0) { return savedVerses.map(e => e.split(',').map(e => parseInt(e))).sort(chronologicalSort) }
+  if (savedVerses.length > 0) { return chronoSorter(savedVerses) }
 
   // Save the query to database/gforms, so node can brute inference it
   try {
@@ -107,9 +107,14 @@ async function getInferredVerses (query) {
 
   const confirmedVerses = await gestaltInference(parsedString)
 
-  const sortedVerses = confirmedVerses.map(e => e.split(',').map(e => parseInt(e))).sort(chronologicalSort)
-
+  const sortedVerses = chronoSorter(confirmedVerses)
+  
   return sortedVerses
+}
+
+// Takes an array in ["4,3","3,4"] form and sorts it chronologically 
+function chronoSorter(versesArr){
+return versesArr.map(e => e.split(',').map(e => parseInt(e))).sort(chronologicalSort).map(e=>e.toString())
 }
 
 // Returns google search links as array
@@ -1037,7 +1042,7 @@ const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), engli
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
 const initVar = initializer()
 // Main function
-getInferredVerses('how to be happy').then(console.log)
+// getInferredVerses('how to be happy').then(console.log)
 
 async function myFunction () {
   const searchval = document.getElementById('searchquery').value
@@ -1047,3 +1052,5 @@ async function myFunction () {
   const confirmedverse = await getInferredVerses(searchval)
   console.log(confirmedverse)
 }
+
+
