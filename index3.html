@@ -60,9 +60,9 @@
       <div class="col-sm">
 
 
-        <form class="d-flex">
+        <form class="d-flex"  onsubmit="beginSearch(); return false">
           <input id="searchquery" class="form-control mr-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-info" type="button" onclick="myFunction()">
+          <button id='searchbtn' class="btn btn-outline-info" type="button" onclick="beginSearch()">
             <i class="fas fa-search"></i>
           </button>
         </form>
@@ -86,12 +86,11 @@
       <div class="col-sm-1">
         -
       </div>
-      <div class="col-sm">
-
-        <div class="d-flex justify-content-center m-2">Verses Left aligned text on viewports sized SM (small) or wider.
-        </div>
-        <div class="d-flex justify-content-center m-2">Verses Left aligned text on viewports sized SM (small) or wider.
-        </div>
+      <div id="versescolumn" class="col-sm">
+      
+  
+              
+       
       </div>
       <div class="col-sm-3">
         -

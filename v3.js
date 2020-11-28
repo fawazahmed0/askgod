@@ -1,6 +1,3 @@
-// Search query to be entered by the user
-const searchQuery = 'what is the purpose of life'
-
 // Change link here based on UTC date, day of month
 // Add another heroku link here
 const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com', 'https://immense-castle-88569.herokuapp.com']
@@ -21,7 +18,7 @@ const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json'
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e)
 // stores the translations
-let translationsArr = []
+let translationsArr;
 
 const gestaltThreshold = 0.60
 
@@ -45,7 +42,7 @@ async function initializer () {
   // Make this function as empty ,so it can only be called once
   // initializer = function () {}
   // Get the Translations
-  await getTranslations(translationLinks);
+  translationsArr= await getTranslations(translationLinks);
   // Stores the question verses JSON
   [questionVerses] = await getLinksJSON([questionVerseLink])
 
@@ -157,8 +154,7 @@ function getLinksFromHTML (htmlString) {
 // Also assigns it to global translationsArr
 async function getTranslations (linksarr) {
   const transJSON = await getLinksJSON(linksarr)
-  translationsArr = transJSON.map(e => e.quran.map(e => e.text)).map(e => qArrayOptimzer(e))
-  return translationsArr
+  return transJSON.map(e => e.quran.map(e => e.text)).map(e => qArrayOptimzer(e))
 }
 // https://www.shawntabrizi.com/code/programmatically-fetch-multiple-apis-parallel-using-async-await-javascript/
 // Get links async i.e in parallel
@@ -1041,16 +1037,37 @@ return holderarr
 const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), englishQuranName.map(e => e[0]))
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
 const initVar = initializer()
-// Main function
-// getInferredVerses('how to be happy').then(console.log)
 
-async function myFunction () {
-  const searchval = document.getElementById('searchquery').value
 
-  if (searchval === '') { return }
+// Gets called on search button being clicked
+async function beginSearch () {
+  // Get search query value
+  const searchQuery = document.getElementById('searchquery').value
+  if (searchQuery === '') { return }
 
-  const confirmedverse = await getInferredVerses(searchval)
-  console.log(confirmedverse)
+  // Fetch verses
+  const confirmedVerses = await getInferredVerses(searchQuery)
+  console.log(confirmedVerses)
+// Show the result in the page
+ await showResult(confirmedVerses)
+
 }
+
+
+async function showResult(verses){
+// eng trans
+let [translation] =  await getTranslations(['https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-safikaskas.json']);
+// convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
+verses = verses.map(e => e.split(',').map(e => parseInt(e)))
+// remove the old verses
+$('#versescolumn').empty()
+// Add the card element, so verses get shown in cards
+$("#versescolumn").append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
+
+for(let [chap, ver] of verses){
+$("#verseslist").append('<li class="list-group-item p-2">'+translation[chap-1][ver-1]+' - [Quran '+chap+':'+ver+']</li>')
+}
+}
+
 
 
