@@ -1071,3 +1071,62 @@ async function showResult (verses) {
     $('#verseslist').append('<li class="list-group-item p-2">' + translation[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
   }
 }
+
+
+async function createDropdown(){
+
+  const [editions] = await getLinksJSON(['https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions.min.json'])
+
+let dropdownObj = {}
+
+  for(let [key,value] of Object.entries(editions)){
+    dropdownObj[value.language] = {}
+
+    dropdownObj[value.language]['id'] = key
+    dropdownObj[value.language]['name'] = value.name
+
+
+
+
+}
+let sortedobj = sortObjByKeys (dropdownObj)
+
+// Here replace with any hardcoded editions to use
+sortedobj['Arabic']  = {'id':'ara_sirajtafseer','name':'ara-sirajtafseer' }
+sortedobj['English']  = {'id':'eng_safikaskas','name':'eng-safikaskas' }
+sortedobj['Urdu']  ={ "id":'urd_abulaalamaududi' ,'name':'urd-abulaalamaududi' }
+
+// add lang+latin key if edition exists
+
+for(let [key,value] of Object.entries(sortedobj)){
+
+  if(editions[value.id+'_lad'])
+  sortedobj[key+' LatinD'] = value.id+'_lad'
+
+  if(editions[value.id+'_la'])
+  sortedobj[key+' Latin'] = value.id+'_la'
+
+}
+
+sortedobj = sortObjByKeys (sortedobj) 
+
+
+for(let [key,value] of Object.entries(sortedobj)){
+  if(key==='English')
+  $('#langdropdown').append('<option value="'+value.name+'"selected>'+key+'</option>')
+else
+$('#langdropdown').append('<option value="'+value.name+'">'+key+'</option>')
+
+}
+
+
+}
+createDropdown()
+
+// Sorts an object by keys and returns the sorted object
+function sortObjByKeys (obj) {
+  const sortedObj = {}
+  const sortedKeys = Object.keys(obj).sort()
+  for (const key of sortedKeys) { sortedObj[key] = obj[key] }
+  return sortedObj
+}
