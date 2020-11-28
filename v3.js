@@ -1067,8 +1067,10 @@ async function beginSearch () {
 }
 
 async function showResult (verses) {
-  // eng trans
-  const [translation] = await getTranslations(['https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-safikaskas.json'])
+  // Form link according to selected language
+  let linkFormed = editionsLink+$('#langdropdown').val().trim()+'.min.json'
+  const [translation] = await getTranslations([linkFormed])
+  console.log('translation is ',translation)
   // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
   verses = verses.map(e => e.split(',').map(e => parseInt(e)))
   // remove the old verses and spinning wheel etc
@@ -1092,7 +1094,7 @@ function createDropdown () {
   }
 
   //Set Preferred Editions as they are easier to understand
-  for(const [key, value] of Object.entries(dropdownObj))
+  for(const [key, value] of Object.entries(preferredEditions))
       dropdownObj[key] = value
 
 
