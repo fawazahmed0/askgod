@@ -17,7 +17,7 @@ const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
 const editionsLink = apiLink + '/editions'
 
 //  english translation editions to use in lunr
-const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json']
+const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json', 'eng-mohammedmarmadu.min.json', 'eng-maududi.min.json','eng-safikaskas.min.json','eng-wahiduddinkhan.min.json','eng-ajarberry.min.json']
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e)
 // stores the translations
@@ -95,8 +95,16 @@ async function getInferredVerses (query) {
   const googLinks = await getGoogleLinks(engQuery.trim() + ' in quran')
   // Fetch google searched result links
   const htmlstr = await linksFetcher(googLinks)
-  // convert html to string
-  const parsedString = htmlToString(htmlstr)
+  // convert html to string, it may throw error while parsing html to string
+  let parsedString;
+  try {
+  parsedString = htmlToString(htmlstr)
+  } catch (error) {
+    console.log("Error in parsing html")
+    console.error(error)
+    parsedString = htmlstr  
+  }
+ 
   const confirmedVerses = await gestaltInference(parsedString)
 
   const sortedVerses = confirmedVerses.map(e => e.split(',').map(e => parseInt(e))).sort(chronologicalSort)
@@ -1030,4 +1038,19 @@ const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), engli
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
 const initVar = initializer()
 // Main function
-// getInferredVerses(searchQuery).then(console.log)
+ getInferredVerses('why are humans divided').then(console.log)
+
+
+async function myFunction(){
+  
+ let searchval = document.getElementById('searchquery').value
+
+if(searchval=="")
+return
+
+let confirmedverse = await getInferredVerses(searchval)
+console.log(confirmedverse)
+
+ 
+
+}
