@@ -29,6 +29,10 @@ const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/q
 // Stores the question verses JSON
 let questionVerses
 
+  // Easier to Understand editions
+  let preferredEditions = {'Arabic':'ara-sirajtafseer','English':'eng-safikaskas','Urdu':'urd-abulaalamaududi'}
+
+
 // Number of verses in quran
 // const VERSE_LENGTH = 6236
 
@@ -1087,10 +1091,10 @@ function createDropdown () {
     dropdownObj[value.language] = value.name
   }
 
-  // Preferred Editions as they are easier to understand
-  dropdownObj.Arabic = 'ara-sirajtafseer'
-  dropdownObj.English = 'eng-safikaskas'
-  dropdownObj.Urdu = 'urd-abulaalamaududi'
+  //Set Preferred Editions as they are easier to understand
+  for(const [key, value] of Object.entries(dropdownObj))
+      dropdownObj[key] = value
+
 
   // add lang+latin key if edition exists
   for (const [key, value] of Object.entries(dropdownObj)) {
@@ -1103,9 +1107,9 @@ function createDropdown () {
 
   const sortedDropDown = sortObjByKeys(dropdownObj)
 
-  for (const [key, value] of Object.entries(sortedDropDown)) {
+  for (const [key, value] of Object.entries(sortedDropDown))
     { $('#langdropdown').append('<option value="' + value + '">' + key + '</option>') }
-  }
+  
 
   // If cookies are set then use that to set language, else set to English as default
   $('#langdropdown option').filter(function () {
