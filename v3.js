@@ -1054,28 +1054,25 @@ async function beginSearch () {
   // Get search query value
   const searchQuery = document.getElementById('searchquery').value
   if (searchQuery === '') { return }
-// Show as loading
-// Add spinning wheel, if there isn't any other
+// 
+// Show as loading spinning wheel,only if there isn't any other
 if($('#spinningwheel').length==0)
       $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
       <div class="spinner-border m-5" role="status">
       <span class="visually-hidden">Loading...</span>
       </div> </div>`)
-      // If fetching verses throw error, then show the toast with NO result found and remove spinner
-      let confirmedVerses
+
+      let confirmedVerses = []
       try {
           // Fetch verses
    confirmedVerses = await getInferredVerses(searchQuery)
   // store the confirmed verses in globally accessible variable
    gloConfirmedVerses = confirmedVerses
       } catch (error) {
-        console.error(error)
-        $('#versescolumn').empty()
-        return
-        
+        console.error(error)    
       }
 
-  // If no verse retrieved show user, then remove the spinning wheel
+  // If no verse retrieved or there was error in retreival, then remove the spinning wheel
   if(confirmedVerses.length==0)
   $('#spinningwheel').remove()
 
