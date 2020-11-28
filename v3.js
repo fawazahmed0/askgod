@@ -18,7 +18,7 @@ const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json'
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e)
 // stores the translations
-let translationsArr;
+let translationsArr
 
 const gestaltThreshold = 0.60
 
@@ -42,7 +42,7 @@ async function initializer () {
   // Make this function as empty ,so it can only be called once
   // initializer = function () {}
   // Get the Translations
-  translationsArr= await getTranslations(translationLinks);
+  translationsArr = await getTranslations(translationLinks);
   // Stores the question verses JSON
   [questionVerses] = await getLinksJSON([questionVerseLink])
 
@@ -105,18 +105,18 @@ async function getInferredVerses (query) {
   const confirmedVerses = await gestaltInference(parsedString)
 
   const sortedVerses = chronoSorter(confirmedVerses)
-  
+
   return sortedVerses
 }
 
-// Takes an array in ["4,3","3,4"] form and sorts it chronologically 
-function chronoSorter(versesArr){
-return versesArr.map(e => e.split(',').map(e => parseInt(e))).sort(chronologicalSort).map(e=>e.toString())
+// Takes an array in ["4,3","3,4"] form and sorts it chronologically
+function chronoSorter (versesArr) {
+  return versesArr.map(e => e.split(',').map(e => parseInt(e))).sort(chronologicalSort).map(e => e.toString())
 }
 
 // Returns google search links as array
 async function getGoogleLinks (searchQuery) {
-// First try with cloudflare cors, cuz it has very low api limits
+  // First try with cloudflare cors, cuz it has very low api limits
   let result = await corsCloudflareFetch([googleSearchLink + encodeURIComponent(searchQuery)])
 
   let links = getLinksFromHTML(result)
@@ -228,7 +228,7 @@ function qArrayOptimzer (arr) {
 // It can be downloaded from https://docs.google.com/spreadsheets/d/1THkt6fNsxKPQ2aE1GDnlzWzT9dt_CHmMijjScUw9z0s/gviz/tq?tqx=out:csv
 function setupDB () {
   // Make this function as empty ,so it can only be called once
-  setupDB = function () {}
+  setupDB = function () { }
   const entryname = 'entry.496077876'
   const formaction = 'https://docs.google.com/forms/d/e/1FAIpQLSd8nWN872r2l1VihernpIfBL1RV-irGjANQAYl-89DVDmTVug/formResponse'
 
@@ -317,10 +317,10 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
     const verseLen = verseStr.length
     if (front) {
       content = parsedString.substring(index, index + verseLen)
-    //  content = cleanPatterns(content, true)
+      //  content = cleanPatterns(content, true)
     } else {
       content = parsedString.substring(index - verseLen, index)
-    //  content = cleanPatterns(content)
+      //  content = cleanPatterns(content)
     }
     if (checkGestaltRatio(verseStr, content)) {
       return [chapter + ',' + verse]
@@ -360,7 +360,7 @@ function getGestaltMultiArr (chapter, verseFrom, verseTo, index, parsedString, c
     // and combined verse length should be less than 600
 
     if (((subConfirmedArr.length > 0 && !front) || (front && subConfirmedArr.filter(e => e !== chapter + ',' + verseFrom).length > 0)) &&
-       translationsArr[0][chapter - 1].slice(verseFrom - 1, verseTo).map(e => e.length).reduce((full, e) => full + e) < 600
+      translationsArr[0][chapter - 1].slice(verseFrom - 1, verseTo).map(e => e.length).reduce((full, e) => full + e) < 600
     ) { return getFromToArr(verseFrom, verseTo).map(e => chapter + ',' + e) }
   }
   return subConfirmedArr
@@ -1038,36 +1038,36 @@ const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), engli
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
 const initVar = initializer()
 
-
 // Gets called on search button being clicked
 async function beginSearch () {
   // Get search query value
   const searchQuery = document.getElementById('searchquery').value
   if (searchQuery === '') { return }
 
+  // Add spinning wheel
+  $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
+<div class="spinner-border m-5" role="status">
+<span class="visually-hidden">Loading...</span>
+</div> </div>`)
+
   // Fetch verses
   const confirmedVerses = await getInferredVerses(searchQuery)
   console.log(confirmedVerses)
-// Show the result in the page
- await showResult(confirmedVerses)
-
+  // Show the result in the page
+  await showResult(confirmedVerses)
 }
 
+async function showResult (verses) {
+  // eng trans
+  const [translation] = await getTranslations(['https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-safikaskas.json'])
+  // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
+  verses = verses.map(e => e.split(',').map(e => parseInt(e)))
+  // remove the old verses and spinning wheel etc
+  $('#versescolumn').empty()
+  // Add the card element, so verses get shown in cards
+  $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
 
-async function showResult(verses){
-// eng trans
-let [translation] =  await getTranslations(['https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-safikaskas.json']);
-// convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
-verses = verses.map(e => e.split(',').map(e => parseInt(e)))
-// remove the old verses
-$('#versescolumn').empty()
-// Add the card element, so verses get shown in cards
-$("#versescolumn").append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
-
-for(let [chap, ver] of verses){
-$("#verseslist").append('<li class="list-group-item p-2">'+translation[chap-1][ver-1]+' - [Quran '+chap+':'+ver+']</li>')
+  for (const [chap, ver] of verses) {
+    $('#verseslist').append('<li class="list-group-item p-2">' + translation[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
+  }
 }
-}
-
-
-
