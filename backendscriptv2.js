@@ -294,13 +294,13 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
 
   for (const translation of translationsArr) {
     const verseStr = translation[chapter - 1][verse - 1]
-    // verselength is 120 percent of original length
-    const verseLen = verseStr.length * 1.2
+    // verselength
+    const verseLen = verseStr.length
     if (front) {
-      content = parsedString.substring(index - slack, index + verseLen)
+      content = parsedString.substring(index , index + verseLen)
     //  content = cleanPatterns(content, true)
     } else {
-      content = parsedString.substring(index - verseLen, index + slack)
+      content = parsedString.substring(index - verseLen, index )
     //  content = cleanPatterns(content)
     }
     if (checkGestaltRatio(verseStr, content)) {

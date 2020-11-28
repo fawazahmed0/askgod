@@ -81,7 +81,7 @@ async function getInferredVerses (query) {
   await initVar
   // Return already existing verses  in questionVerses.json
   const savedVerses = await getQueryVerses(query)
-  if (savedVerses.length > 0) { return savedVerses }
+  if (savedVerses.length > 0) { return savedVerses.map(e => e.split(',').map(e => parseInt(e))).sort(chronologicalSort) }
 
   // Save the query to database/gforms, so node can brute inference it
   try {
@@ -313,13 +313,13 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
 
   for (const translation of translationsArr) {
     const verseStr = translation[chapter - 1][verse - 1]
-    // verselength is 120 percent of original length
-    const verseLen = verseStr.length * 1.2
+    // verselength
+    const verseLen = verseStr.length
     if (front) {
-      content = parsedString.substring(index - slack, index + verseLen)
+      content = parsedString.substring(index , index + verseLen)
     //  content = cleanPatterns(content, true)
     } else {
-      content = parsedString.substring(index - verseLen, index + slack)
+      content = parsedString.substring(index - verseLen, index )
     //  content = cleanPatterns(content)
     }
     if (checkGestaltRatio(verseStr, content)) {
@@ -1038,7 +1038,7 @@ const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), engli
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
 const initVar = initializer()
 // Main function
- getInferredVerses('why are humans divided').then(console.log)
+ getInferredVerses('how to be happy').then(console.log)
 
 
 async function myFunction(){
