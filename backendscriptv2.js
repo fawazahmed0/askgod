@@ -48,7 +48,7 @@ const questionVerses = JSON.parse(questionVersesStr)
 // const googleCodesLink = apiLink + '/isocodes/google-codes.min.json'
 
 //  english translation editions to use in lunr
-const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json', 'eng-mohammedmarmadu.min.json', 'eng-maududi.min.json','eng-safikaskas.min.json','eng-wahiduddinkhan.min.json','eng-ajarberry.min.json']
+const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json', 'eng-mohammedmarmadu.min.json', 'eng-maududi.min.json', 'eng-safikaskas.min.json', 'eng-wahiduddinkhan.min.json', 'eng-ajarberry.min.json']
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e)
 
@@ -285,7 +285,6 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
   verse = parseInt(verse)
   index = parseInt(index)
   let content
-  const slack = 20
 
   // return with empty array if chap verse doesn't exist or chap verse already exists in confirmedArr
   if (chapter > CHAPTER_LENGTH || !translationsArr[0][chapter - 1][verse - 1]) { return [] }
@@ -297,10 +296,10 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
     // verselength
     const verseLen = verseStr.length
     if (front) {
-      content = parsedString.substring(index , index + verseLen)
+      content = parsedString.substring(index, index + verseLen)
     //  content = cleanPatterns(content, true)
     } else {
-      content = parsedString.substring(index - verseLen, index )
+      content = parsedString.substring(index - verseLen, index)
     //  content = cleanPatterns(content)
     }
     if (checkGestaltRatio(verseStr, content)) {
@@ -369,7 +368,6 @@ function getFromToArr (from, to) {
   for (let i = from; i <= to; i++) { tempArr = tempArr.concat(i) }
   return tempArr
 }
-
 
 // This will make the python 3 script run in multiple os environments
 // https://stackoverflow.com/questions/20643470/execute-a-command-line-binary-with-node-js

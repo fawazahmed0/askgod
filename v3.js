@@ -17,7 +17,7 @@ const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
 const editionsLink = apiLink + '/editions'
 
 //  english translation editions to use in lunr
-const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json', 'eng-mohammedmarmadu.min.json', 'eng-maududi.min.json','eng-safikaskas.min.json','eng-wahiduddinkhan.min.json','eng-ajarberry.min.json']
+const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json', 'eng-mohammedmarmadu.min.json', 'eng-maududi.min.json', 'eng-safikaskas.min.json', 'eng-wahiduddinkhan.min.json', 'eng-ajarberry.min.json']
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e)
 // stores the translations
@@ -96,15 +96,15 @@ async function getInferredVerses (query) {
   // Fetch google searched result links
   const htmlstr = await linksFetcher(googLinks)
   // convert html to string, it may throw error while parsing html to string
-  let parsedString;
+  let parsedString
   try {
-  parsedString = htmlToString(htmlstr)
+    parsedString = htmlToString(htmlstr)
   } catch (error) {
-    console.log("Error in parsing html")
+    console.log('Error in parsing html')
     console.error(error)
-    parsedString = htmlstr  
+    parsedString = htmlstr
   }
- 
+
   const confirmedVerses = await gestaltInference(parsedString)
 
   const sortedVerses = confirmedVerses.map(e => e.split(',').map(e => parseInt(e))).sort(chronologicalSort)
@@ -304,7 +304,6 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
   verse = parseInt(verse)
   index = parseInt(index)
   let content
-  const slack = 20
 
   // return with empty array if chap verse doesn't exist or chap verse already exists in confirmedArr
   if (chapter > CHAPTER_LENGTH || !translationsArr[0][chapter - 1][verse - 1]) { return [] }
@@ -316,10 +315,10 @@ function getGestaltArr (chapter, verse, index, parsedString, confirmedArr, front
     // verselength
     const verseLen = verseStr.length
     if (front) {
-      content = parsedString.substring(index , index + verseLen)
+      content = parsedString.substring(index, index + verseLen)
     //  content = cleanPatterns(content, true)
     } else {
-      content = parsedString.substring(index - verseLen, index )
+      content = parsedString.substring(index - verseLen, index)
     //  content = cleanPatterns(content)
     }
     if (checkGestaltRatio(verseStr, content)) {
@@ -1038,19 +1037,13 @@ const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), engli
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
 const initVar = initializer()
 // Main function
- getInferredVerses('how to be happy').then(console.log)
+getInferredVerses('how to be happy').then(console.log)
 
+async function myFunction () {
+  const searchval = document.getElementById('searchquery').value
 
-async function myFunction(){
-  
- let searchval = document.getElementById('searchquery').value
+  if (searchval === '') { return }
 
-if(searchval=="")
-return
-
-let confirmedverse = await getInferredVerses(searchval)
-console.log(confirmedverse)
-
- 
-
+  const confirmedverse = await getInferredVerses(searchval)
+  console.log(confirmedverse)
 }
