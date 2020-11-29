@@ -33,12 +33,12 @@ let editionsJSON
 
 const gestaltThreshold = 0.60
 
-const UTCDateStr = new Date().toISOString().substring(0,10)
+const UTCDateStr = new Date().toISOString().substring(0, 10)
 
-const avoidCache = '?d='+UTCDateStr
+const avoidCache = '?d=' + UTCDateStr
 
 // JSON containing already searched verses from node side
-const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/questionverses.min.json'+avoidCache
+const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/questionverses.min.json' + avoidCache
 // Stores the question verses JSON
 let questionVerses
 
@@ -119,7 +119,7 @@ async function getInferredVerses (query) {
   // Translate query to english
   const engQuery = await translate(query)
   // Get google search result links , add space repeat to avoid query caching
-  const googLinks = await getGoogleLinks(engQuery.trim() +" ".repeat(getRandomNo(3)) +' in quran')
+  const googLinks = await getGoogleLinks(engQuery.trim() + ' '.repeat(getRandomNo(3)) + ' in quran')
   // Fetch google searched result links
   const htmlstr = await linksFetcher(googLinks)
   // convert html to string, it may throw error while parsing html to string
@@ -1114,8 +1114,8 @@ window.beginSearch = async function beginSearch () {
 async function showResult (verses) {
   const langSelected = $('#langdropdown option:selected').text()
   const editionSelected = $('#langdropdown').val().trim()
-
-  document.cookie = "language="+langSelected+"; expires=Fri, 31 Dec 9999 23:59:59 GMT"
+  // Save selected langauge in cookie, to allow dropdown selection later based on cookie value
+  document.cookie = 'language=' + langSelected + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
   // Form link according to selected language
   const linkFormed = editionsLink + '/' + editionSelected + '.min.json'
   const [translation] = await getTranslations([linkFormed])
@@ -1139,12 +1139,11 @@ async function showResult (verses) {
 function createDropdown () {
   const dropdownObj = {}
   // Default lang to select
-  let DefaultLang = 'English'
-  let cookies = document.cookie.split('; ')
-  cookies = cookies.filter(e=>e.startsWith('language'))
-  if(cookies.length>0)
-  DefaultLang = cookies[0].split('=')[1]
-
+  let langToSelect = 'English'
+  // Set the langToSelect to a cookie value if it was saved before
+  const cookies = document.cookie.split('; ')
+  const langcookie = cookies.filter(e => e.startsWith('language'))
+  if (langcookie.length > 0) { langToSelect = langcookie[0].split('=')[1] }
 
   for (const value of Object.values(editionsJSON)) {
     dropdownObj[value.language] = value.name
@@ -1168,7 +1167,7 @@ function createDropdown () {
 
   // If cookies are set then use that to set language, else set to English as default
   $('#langdropdown option').filter(function () {
-    return ($(this).text() === DefaultLang) // To select Blue
+    return ($(this).text() === langToSelect) // To select Blue
   }).prop('selected', true)
 }
 
@@ -1189,4 +1188,3 @@ window.changeLang = async function changeLang () {
 function getRandomNo (max) {
   return Math.floor(Math.random() * Math.floor(max))
 }
-
