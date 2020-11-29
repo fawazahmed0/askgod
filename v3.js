@@ -1121,6 +1121,7 @@ window.beginSearch = async function beginSearch () {
     // Fetch verses
     confirmedVerses = await getInferredVerses(searchQuery)
     // store the confirmed verses in globally accessible variable
+    if(confirmedVerses.length>0)
     gloConfirmedVerses = confirmedVerses
   } catch (error) {
     console.error(error)
