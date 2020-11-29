@@ -1,3 +1,12 @@
+// Fix issue for parcel/babel, for async await thing for old browser, or only support new browsers with async await functionality
+// https://flaviocopes.com/parcel-regeneratorruntime-not-defined/
+import 'regenerator-runtime/runtime'
+// Fix issue for parcel jquery script
+// https://github.com/parcel-bundler/parcel/issues/333#issuecomment-504552272
+//https://www.npmjs.com/package/jquery
+import $ from "jquery";
+import * as difflib from './difflib.js'
+
 // Change link here based on UTC date, day of month
 // Add another heroku link here
 const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com', 'https://immense-castle-88569.herokuapp.com']
@@ -22,6 +31,8 @@ let translationsArr
 
 let editionsJSON
 
+
+
 const gestaltThreshold = 0.60
 
 // JSON containing already searched verses from node side
@@ -30,7 +41,10 @@ const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/q
 let questionVerses
 
   // Easier to Understand editions
-  let preferredEditions = {'Arabic':'ara-sirajtafseer','English':'eng-safikaskas','Urdu':'urd-abulaalamaududi'}
+let preferredEditions = {'Arabic':'ara-sirajtafseer','English':'eng-ummmuhammad','Urdu':'urd-abulaalamaududi'}
+
+      // Have to translate this in different languages
+let proclaimMsg  = 'God only asks to accept that there is none worthy of worship except him'
 
   // Stores the current confirmed Verses
 let gloConfirmedVerses = [];
@@ -46,7 +60,7 @@ const CHAPTER_LENGTH = 114
 const numberPattern = /(?<!\d)[0-2]?\d{1,2}(?!\d)/gi
 
 // call this only once
-async function initializer () {
+async function oneTimeFunc () {
   // Make this function as empty ,so it can only be called once
   // initializer = function () {}
   // Get the Translations
@@ -60,6 +74,8 @@ async function initializer () {
   setupDB()
   // Create the dropdown
   createDropdown()
+  //var abc = document.getElementById('langdropdown')
+//abc.addEventListener('change', showResult (gloConfirmedVerses));
 }
 
 // Return english translated text for the given string
@@ -95,7 +111,7 @@ async function getInferredVerses (query) {
   try {
     saveToDB(query)
   } catch (error) {
-
+      console.error(error)
   }
   // Translate query to english
   const engQuery = await translate(query)
@@ -201,23 +217,38 @@ function htmlToString (htmlString) {
 
 // Fetch link using heroku
 async function corsHerokuFetch (link) {
-  const response = await fetch(corsHeroku + '/' + link)
+  try {
+    const response = await fetch(corsHeroku + '/' + link)
 
-  const result = await response.text()
+    const result = await response.text()
+  
+    return result
+    
+  } catch (error) {
+    console.error(error)
+    return ''
+  }
 
-  return result
 }
 
 // Fetch links using cloudflare
 async function corsCloudflareFetch (linksarr) {
-  const response = await fetch(corsCloudflare, {
-    method: 'POST',
-    body: JSON.stringify(linksarr)
-  })
+  try {
+    const response = await fetch(corsCloudflare, {
+      method: 'POST',
+      body: JSON.stringify(linksarr)
+    })
+  
+    const result = await response.text()
+  
+    return result
+    
+  } catch (error) {
+    console.error(error)
+    return ''
+    
+  }
 
-  const result = await response.text()
-
-  return result
 }
 
 // optimizes a flat array of 6236 length to optimized array
@@ -1047,10 +1078,13 @@ return holderarr
 // Patterns that confirms the verse pattern
 const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), englishQuranName.map(e => e[0]))
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
-const initVar = initializer()
+const initVar = oneTimeFunc()
 
+// parcel html cannot access function issue
+// https://github.com/parcel-bundler/parcel/issues/1618
+// https://stackoverflow.com/a/57603027
 // Gets called on search button being clicked
-async function beginSearch () {
+window.beginSearch =  async function beginSearch () {
   // Get search query value
   const searchQuery = document.getElementById('searchquery').value
   if (searchQuery === '') { return }
@@ -1097,6 +1131,11 @@ async function showResult (verses) {
   for (const [chap, ver] of verses) {
     $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + translation[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
   }
+
+  $('#verseslist').append('<li class="list-group-item p-2 bg-dark text-white" dir="auto">'+proclaimMsg+'</li>')
+
+
+
 }
 }
 
@@ -1142,4 +1181,8 @@ function sortObjByKeys (obj) {
   const sortedKeys = Object.keys(obj).sort()
   for (const key of sortedKeys) { sortedObj[key] = obj[key] }
   return sortedObj
+}
+
+window.changeLang = async function changeLang(){
+  await showResult (gloConfirmedVerses)
 }

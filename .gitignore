@@ -2,3 +2,5 @@
 .dccache
 htmlresultstr
 newstr
+.cache/
+dist/
