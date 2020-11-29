@@ -5,7 +5,7 @@ from google_trans_new import google_translator
 import random
 import time
 
-# This script will take a string and return back all the translations of it in an array
+# This script will take a string and return back all the translations of it in an array, may contain duplicates
 
 # Refer https://github.com/lushan88a/google_trans_new to see examples on how to use this package
 translator = google_translator(url_suffix="hk", timeout=10)
@@ -35,8 +35,10 @@ translated_list = []
 for key in g_codes.keys():
     # sleep randomly between 0.2-0.5 seconds to avoid blocking
     time.sleep(random.uniform(0.2, 0.5))
-    translate_text = translator.translate(args[0], lang_tgt=key)
-    translated_list.append(translate_text)
+    translate_text = translator.translate(
+        args[0], lang_tgt=key, pronounce=True)
+    # Remove None ,false etc from the result and then concat
+    translated_list = translated_list + list(filter(None, translate_text))
     # print(translation.text)
     # print(translation.pronunciation)
 
