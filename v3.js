@@ -7,6 +7,7 @@ import 'regenerator-runtime/runtime'
 import $ from "jquery";
 import * as difflib from './difflib.js'
 
+
 // Change link here based on UTC date, day of month
 // Add another heroku link here
 const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com', 'https://immense-castle-88569.herokuapp.com']
@@ -58,6 +59,9 @@ const CHAPTER_LENGTH = 114
 // numberpattern that match numbers less than 300 and with negative lookbehind and negative lookahead digits
 //  i.e no digit front and end of match
 const numberPattern = /(?<!\d)[0-2]?\d{1,2}(?!\d)/gi
+
+// Register Service worker for Add to Home Screen option to work
+if ('serviceWorker' in navigator) {   navigator.serviceWorker.register('service-worker.js')}
 
 // call this only once
 async function oneTimeFunc () {
