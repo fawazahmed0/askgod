@@ -64,8 +64,9 @@ const googToDropdownLang = {
 const preferredEditions = { Arabic: 'ara-sirajtafseer', English: 'eng-ummmuhammad', Urdu: 'urd-abulaalamaududi' }
 
 // Have to translate this in different languages
-const proclaimMsg = 'God only asks to accept that there is none worthy of worship except him'
-
+let proclaimMsg = 'God only asks to accept that there is none worthy of worship except him'
+const proclaimLink = askGodLink+'proclaim.min.json'
+let proclaimJSON
 // Stores the current confirmed Verses
 let gloConfirmedVerses = []
 
@@ -92,6 +93,8 @@ async function oneTimeFunc () {
   [questionVerses] = await getLinksJSON([questionVerseLink]);
   // Get hint question JSON
   [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
+  // Get proclaim message JSON
+  [proclaimJSON] =  await getLinksJSON([proclaimLink]);
   // Editions JSON from quran api
   [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
   // This func is called only once, next time it is just an empty block of code
@@ -1212,14 +1215,24 @@ window.changeLang = async function changeLang () {
   // Replace google translate named languages to dropdown named languages, used for multi language showing
   for (const [key, value] of Object.entries(googToDropdownLang)) {
     hintQuestionJSON[value] = hintQuestionJSON[key]
+    proclaimJSON[value] = proclaimJSON[key]
   }
 
   // Remove latin/latinD from dropdown language
   const langSelectedClean = langSelected.replace(/.(latin|latind)$/i, '').trim()
   let translatedHintArr = []
   for (const [key, value] of Object.entries(hintQuestionJSON)) {
-    if (key === langSelectedClean.toLowerCase()) { translatedHintArr = value }
+    if (key === langSelectedClean.toLowerCase()) {
+       translatedHintArr = value
+       }
   }
+
+  for (const [key, value] of Object.entries(proclaimJSON)) {
+    if (key === langSelectedClean.toLowerCase()) {
+       proclaimMsg = value.join('<br>')
+       }
+  }
+
   // Remove the old values/hint questions & append english hint question
   $('#hintplaceholder').empty()
   $('#hintplaceholder').append('<div class="carousel-item active text-center">' + engHintQues + '</div>')
