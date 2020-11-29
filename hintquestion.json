@@ -1,0 +1,364 @@
+{
+    "afrikaans": [
+        "wat is die doel van die lewe? "
+    ],
+    "albanian": [
+        "cili \u00ebsht\u00eb q\u00ebllimi i jet\u00ebs? "
+    ],
+    "amharic": [
+        "\u12e8\u1215\u12ed\u12c8\u1275 \u12d3\u120b\u121b \u121d\u1295\u12f5\u1290\u12cd? ",
+        "yeh\u0323iyiweti \u2018alama minidinewi?"
+    ],
+    "arabic": [
+        "\u0645\u0627\u0647\u0648 \u0627\u0644\u0645\u063a\u0632\u0649 \u0645\u0646 \u0627\u0644\u062d\u064a\u0627\u0629\u061f ",
+        "mahw almaghzaa min alhayaa?"
+    ],
+    "armenian": [
+        "\u0578\u0580\u0576 \u0567 \u056f\u0575\u0561\u0576\u0584\u056b \u0576\u057a\u0561\u057f\u0561\u056f\u0568 ",
+        "vorn e kyank\u2019i npataky"
+    ],
+    "azerbaijani": [
+        "h\u0259yat\u0131n m\u0259qs\u0259di n\u0259dir? "
+    ],
+    "basque": [
+        "zein da bizitzaren xedea? "
+    ],
+    "belarusian": [
+        "\u044f\u043a\u0430\u044f \u043c\u044d\u0442\u0430 \u0436\u044b\u0446\u0446\u044f? ",
+        "jakaja meta \u017eyccia?"
+    ],
+    "bengali": [
+        "\u099c\u09c0\u09ac\u09a8\u09c7\u09b0 \u0989\u09a6\u09cd\u09a6\u09c7\u09b6\u09cd\u09af \u0995\u09bf? ",
+        "J\u012bban\u0113ra udd\u0113\u015bya ki?"
+    ],
+    "bosnian": [
+        "koja je svrha \u017eivota? "
+    ],
+    "bulgarian": [
+        "\u043a\u0430\u043a\u0432\u0430 \u0435 \u0446\u0435\u043b\u0442\u0430 \u043d\u0430 \u0436\u0438\u0432\u043e\u0442\u0430? ",
+        "kakva e tselta na zhivota?"
+    ],
+    "catalan": [
+        "quin \u00e9s el prop\u00f2sit de la vida? "
+    ],
+    "cebuano": [
+        "unsa ang katuyoan sa kinabuhi? "
+    ],
+    "chichewa": [
+        "cholinga cha moyo nchiyani? "
+    ],
+    "chinese(simplified)": [
+        "\u4eba\u751f\u7684\u76ee\u7684\u662f\u4ec0\u4e48\uff1f ",
+        "R\u00e9nsh\u0113ng de m\u00f9d\u00ec sh\u00ec sh\u00e9nme?"
+    ],
+    "chinese(traditional)": [
+        "\u4eba\u751f\u7684\u76ee\u7684\u662f\u4ec0\u9ebc\uff1f ",
+        "R\u00e9nsh\u0113ng de m\u00f9d\u00ec sh\u00ec sh\u00e9nme?"
+    ],
+    "corsican": [
+        "qualessu h\u00e8 u scopu di a vita? "
+    ],
+    "croatian": [
+        "koja je svrha \u017eivota? "
+    ],
+    "czech": [
+        "jak\u00fd je smysl \u017eivota? "
+    ],
+    "danish": [
+        "hvad er form\u00e5let med livet? "
+    ],
+    "dutch": [
+        "Wat is het doel van het leven? "
+    ],
+    "english": [
+        "what is the purpose of life? "
+    ],
+    "esperanto": [
+        "kio estas la celo de la vivo? "
+    ],
+    "estonian": [
+        "mis on elu eesm\u00e4rk? "
+    ],
+    "filipino": [
+        "ano ang layunin ng buhay? "
+    ],
+    "finnish": [
+        "mik\u00e4 on el\u00e4m\u00e4n tarkoitus? "
+    ],
+    "french": [
+        "Quel est le but de la vie? "
+    ],
+    "frisian": [
+        "wat is it doel fan it libben? "
+    ],
+    "galician": [
+        "cal \u00e9 o prop\u00f3sito da vida? "
+    ],
+    "georgian": [
+        "\u10e0\u10d0 \u10d0\u10e0\u10d8\u10e1 \u10ea\u10ee\u10dd\u10d5\u10e0\u10d4\u10d1\u10d8\u10e1 \u10db\u10d8\u10d6\u10d0\u10dc\u10d8? ",
+        "ra aris tskhovrebis mizani?"
+    ],
+    "german": [
+        "Was ist der Sinn des Lebens? "
+    ],
+    "greek": [
+        "\u03c0\u03bf\u03b9\u03bf\u03c2 \u03b5\u03af\u03bd\u03b1\u03b9 \u03bf \u03c3\u03ba\u03bf\u03c0\u03cc\u03c2 \u03c4\u03b7\u03c2 \u03b6\u03c9\u03ae\u03c2; ",
+        "poios e\u00ednai o skop\u00f3s tis zo\u00eds?"
+    ],
+    "gujarati": [
+        "\u0a9c\u0ac0\u0ab5\u0aa8\u0aa8\u0acb \u0ab9\u0ac7\u0aa4\u0ac1 \u0ab6\u0ac1\u0a82 \u0a9b\u0ac7? ",
+        "J\u012bvanan\u014d h\u0113tu \u015bu\u1e41 ch\u0113?"
+    ],
+    "haitiancreole": [
+        "ki objektif lavi a? "
+    ],
+    "hausa": [
+        "menene manufar rayuwa? "
+    ],
+    "hawaiian": [
+        "he aha ke kumu o ke ola? "
+    ],
+    "hebrew": [
+        "\u05de\u05d4 \u05de\u05d8\u05e8\u05ea \u05d4\u05d7\u05d9\u05d9\u05dd? "
+    ],
+    "hindi": [
+        "\u091c\u093c\u093f\u0902\u0926\u0917\u0940 \u0915\u093e \u0909\u0926\u094d\u0926\u0947\u0936\u094d\u092f \u0915\u094d\u092f\u093e \u0939\u0948? ",
+        "zindagee ka uddeshy kya hai?"
+    ],
+    "hmong": [
+        "lub hom phiaj ua neej yog dab tsi? "
+    ],
+    "hungarian": [
+        "Mi az \u00e9let c\u00e9lja? "
+    ],
+    "icelandic": [
+        "hver er tilgangur l\u00edfsins? "
+    ],
+    "igbo": [
+        "kedu ihe b\u1ee5 nzube nke nd\u1ee5? "
+    ],
+    "indonesian": [
+        "Apakah tujuan hidup? "
+    ],
+    "irish": [
+        "cad \u00e9 cusp\u00f3ir na beatha? "
+    ],
+    "italian": [
+        "Qual \u00e8 lo scopo della vita? "
+    ],
+    "japanese": [
+        "\u4eba\u751f\u306e\u76ee\u7684\u306f\u4f55\u3067\u3059\u304b\uff1f ",
+        "Jinsei no mokuteki wa nanidesu ka?"
+    ],
+    "javanese": [
+        "apa tujuane urip? "
+    ],
+    "kannada": [
+        "\u0c9c\u0cc0\u0cb5\u0ca8\u0ca6 \u0c89\u0ca6\u0ccd\u0ca6\u0cc7\u0cb6\u0cb5\u0cc7\u0ca8\u0cc1? ",
+        "J\u012bvanada udd\u0113\u015bav\u0113nu?"
+    ],
+    "kazakh": [
+        "\u04e9\u043c\u0456\u0440\u0434\u0456\u04a3 \u043c\u04d9\u043d\u0456 \u043d\u0435\u0434\u0435? ",
+        "\u00f6mirdi\u00f1 m\u00e4ni nede?"
+    ],
+    "khmer": [
+        "\u178f\u17be\u17a2\u17d2\u179c\u17b8\u1791\u17c5\u1787\u17b6\u1782\u17c4\u179b\u1794\u17c6\u178e\u1784\u1793\u17c3\u1787\u17b8\u179c\u17b7\u178f? ",
+        "tae avei tow chea kolbamnng nei chivit?"
+    ],
+    "kinyarwanda": [
+        "intego y'ubuzima ni iyihe? "
+    ],
+    "korean": [
+        "\uc0b6\uc758 \ubaa9\uc801\uc740 \ubb34\uc5c7\uc785\ub2c8\uae4c? ",
+        "salm-ui mogjeog-eun mueos-ibnikka?"
+    ],
+    "kurdish(kurmanji)": [
+        "armanca jiyan\u00ea \u00e7i ye? "
+    ],
+    "kyrgyz": [
+        "\u0436\u0430\u0448\u043e\u043e\u043d\u0443\u043d \u043c\u0430\u043a\u0441\u0430\u0442\u044b \u044d\u043c\u043d\u0435\u0434\u0435? ",
+        "ja\u015foonun maksat\u0131 emnede?"
+    ],
+    "lao": [
+        "\u0e88\u0eb8\u0e94\u0e9b\u0eb0\u0eaa\u0ebb\u0e87\u0e82\u0ead\u0e87\u0e8a\u0eb5\u0ea7\u0eb4\u0e94\u0ec1\u0ea1\u0ec8\u0e99\u0eab\u0e8d\u0eb1\u0e87? ",
+        "chudpasongkhong sivid aemnjang"
+    ],
+    "latin": [
+        "quod ad animam ? "
+    ],
+    "latvian": [
+        "k\u0101ds ir dz\u012bves m\u0113r\u0137is? "
+    ],
+    "lithuanian": [
+        "koks gyvenimo tikslas? "
+    ],
+    "luxembourgish": [
+        "wat ass den Zweck vum Liewen? "
+    ],
+    "macedonian": [
+        "\u043a\u043e\u0458\u0430 \u0435 \u0446\u0435\u043b\u0442\u0430 \u043d\u0430 \u0436\u0438\u0432\u043e\u0442\u043e\u0442? ",
+        "koja e celta na \u017eivotot?"
+    ],
+    "malagasy": [
+        "inona no tanjon'ny fiainana? "
+    ],
+    "malay": [
+        "apakah tujuan hidup? "
+    ],
+    "malayalam": [
+        "\u0d1c\u0d40\u0d35\u0d3f\u0d24\u0d24\u0d4d\u0d24\u0d3f\u0d28\u0d4d\u0d31\u0d46 \u0d09\u0d26\u0d4d\u0d26\u0d47\u0d36\u0d4d\u0d2f\u0d02 \u0d0e\u0d28\u0d4d\u0d24\u0d3e\u0d23\u0d4d? ",
+        "j\u012bvitattin\u1e5fe udd\u0113\u015bya\u1e41 ent\u0101\u1e47?"
+    ],
+    "maltese": [
+        "x'inhu l-iskop tal-\u0127ajja? "
+    ],
+    "maori": [
+        "he aha te kaupapa o te koiora? "
+    ],
+    "marathi": [
+        "\u091c\u0940\u0935\u0928\u093e\u091a\u093e \u0939\u0947\u0924\u0942 \u0915\u093e\u092f \u0906\u0939\u0947? ",
+        "J\u012bvan\u0101c\u0101 h\u0113t\u016b k\u0101ya \u0101h\u0113?"
+    ],
+    "mongolian": [
+        "\u0430\u043c\u044c\u0434\u0440\u0430\u043b\u044b\u043d \u0437\u043e\u0440\u0438\u043b\u0433\u043e \u044e\u0443 \u0432\u044d? ",
+        "amidralyn zorilgo yuu ve?"
+    ],
+    "myanmar(burmese)": [
+        "\u1018\u101d\u101b\u100a\u103a\u101b\u103d\u101a\u103a\u1001\u103b\u1000\u103a\u1000\u102c\u1038\u1021\u1018\u101a\u103a\u1014\u100a\u103a\u1038\u104b ",
+        "bhaw rairwalhkyet karr aabhaalnaee ."
+    ],
+    "nepali": [
+        "\u091c\u0940\u0935\u0928\u0915\u094b \u0909\u0926\u094d\u0926\u0947\u0936\u094d\u092f \u0915\u0947 \u0939\u094b? ",
+        "J\u012bvanak\u014d udd\u0113\u015bya k\u0113 h\u014d?"
+    ],
+    "norwegian": [
+        "hva er meningen med livet? "
+    ],
+    "odia(oriya)": [
+        "\u0b1c\u0b40\u0b2c\u0b28\u0b30 \u0b09\u0b26\u0b4d\u0b26\u0b47\u0b36\u0b4d\u0b5f \u0b15\u2019\u0b23? "
+    ],
+    "pashto": [
+        "\u062f \u0698\u0648\u0646\u062f \u0647\u062f\u0641 \u0685\u0647 \u062f\u06cc\u061f "
+    ],
+    "persian": [
+        "\u0647\u062f\u0641 \u0627\u0632 \u0632\u0646\u062f\u06af\u06cc \u0686\u06cc\u0633\u062a\u061f "
+    ],
+    "polish": [
+        "Jaki jest cel \u017cycia? "
+    ],
+    "portuguese": [
+        "Qual \u00e9 o prop\u00f3sito da vida? "
+    ],
+    "punjabi": [
+        "\u0a1c\u0a3c\u0a3f\u0a70\u0a26\u0a17\u0a40 \u0a26\u0a3e \u0a2e\u0a15\u0a38\u0a26 \u0a15\u0a40 \u0a39\u0a48? ",
+        "Zidag\u012b d\u0101 makasada k\u012b hai?"
+    ],
+    "romanian": [
+        "care este scopul vietii? "
+    ],
+    "russian": [
+        "\u0427\u0442\u043e \u0442\u0430\u043a\u043e\u0435 \u0441\u043c\u044b\u0441\u043b \u0436\u0438\u0437\u043d\u0438? ",
+        "Chto takoye smysl zhizni?"
+    ],
+    "samoan": [
+        "o le a le mafua\u02bbaga o le olaga? "
+    ],
+    "scotsgaelic": [
+        "d\u00e8 an adhbhar a tha beatha? "
+    ],
+    "serbian": [
+        "\u043a\u043e\u0458\u0430 \u0458\u0435 \u0441\u0432\u0440\u0445\u0430 \u0436\u0438\u0432\u043e\u0442\u0430? ",
+        "koja je svrha \u017eivota?"
+    ],
+    "sesotho": [
+        "lebaka la bophelo ke lefe? "
+    ],
+    "shona": [
+        "chii chiri chinangwa chehupenyu? "
+    ],
+    "sindhi": [
+        "\u0632\u0646\u062f\u06af\u064a \u062c\u0648 \u0645\u0642\u0635\u062f \u0687\u0627 \u0622\u0647\u064a\u061f "
+    ],
+    "sinhala": [
+        "\u0da2\u0dd3\u0dc0\u0dd2\u0dad\u0dba\u0dda \u0d85\u0dbb\u0db8\u0dd4\u0dab \u0d9a\u0dd4\u0db8\u0d9a\u0dca\u0daf? ",
+        "j\u012bvitay\u0113 aramu\u1e47a kumakda?"
+    ],
+    "slovak": [
+        "ak\u00fd je \u00fa\u010del \u017eivota? "
+    ],
+    "slovenian": [
+        "kaj je namen \u017eivljenja? "
+    ],
+    "somali": [
+        "waa maxay ujeedka nolosha? "
+    ],
+    "spanish": [
+        "\u00bfCu\u00e1l es el prop\u00f3sito de la vida? "
+    ],
+    "sundanese": [
+        "naon tujuan hirup? "
+    ],
+    "swahili": [
+        "kusudi la maisha ni nini? "
+    ],
+    "swedish": [
+        "Vad \u00e4r meningen med livet? "
+    ],
+    "tajik": [
+        "\u043c\u0430\u049b\u0441\u0430\u0434\u0438 \u0437\u0438\u043d\u0434\u0430\u0433\u04e3 \u0447\u0438\u0441\u0442? ",
+        "maqsadi zindag\u012b cist?"
+    ],
+    "tamil": [
+        "\u0bb5\u0bbe\u0bb4\u0bcd\u0b95\u0bcd\u0b95\u0bc8\u0baf\u0bbf\u0ba9\u0bcd \u0ba8\u0bcb\u0b95\u0bcd\u0b95\u0bae\u0bcd \u0b8e\u0ba9\u0bcd\u0ba9? ",
+        "V\u0101\u1e3bkkaiyi\u1e49 n\u014dkkam e\u1e49\u1e49a?"
+    ],
+    "tatar": [
+        "\u0442\u043e\u0440\u043c\u044b\u0448\u043d\u044b\u04a3 \u043c\u0430\u043a\u0441\u0430\u0442\u044b \u043d\u0438\u043d\u0434\u0438? "
+    ],
+    "telugu": [
+        "\u0c1c\u0c40\u0c35\u0c3f\u0c24\u0c02 \u0c2f\u0c4a\u0c15\u0c4d\u0c15 \u0c09\u0c26\u0c4d\u0c26\u0c47\u0c36\u0c4d\u0c2f\u0c02 \u0c0f\u0c2e\u0c3f\u0c1f\u0c3f? ",
+        "J\u012bvita\u1e41 yokka udd\u0113\u015bya\u1e41 \u0113mi\u1e6di?"
+    ],
+    "thai": [
+        "\u0e08\u0e38\u0e14\u0e21\u0e38\u0e48\u0e07\u0e2b\u0e21\u0e32\u0e22\u0e02\u0e2d\u0e07\u0e0a\u0e35\u0e27\u0e34\u0e15\u0e04\u0e37\u0e2d\u0e2d\u0e30\u0e44\u0e23? ",
+        "Cud m\u00f9ngh\u0304m\u0101y k\u0304hxng ch\u012bwit kh\u1ee5\u0304x xar\u1ecb?"
+    ],
+    "turkish": [
+        "hayat\u0131n amac\u0131 nedir? "
+    ],
+    "turkmen": [
+        "durmu\u015fy\u0148 maksady n\u00e4me? "
+    ],
+    "ukrainian": [
+        "\u044f\u043a\u0430 \u043c\u0435\u0442\u0430 \u0436\u0438\u0442\u0442\u044f? ",
+        "yaka meta zhyttya?"
+    ],
+    "urdu": [
+        "\u0632\u0646\u062f\u06af\u06cc \u06a9\u0627 \u0645\u0642\u0635\u062f \u06a9\u06cc\u0627 \u06c1\u06d2\u061f "
+    ],
+    "uyghur": [
+        "\u06be\u0627\u064a\u0627\u062a\u0646\u0649\u06ad \u0645\u06d5\u0642\u0633\u0649\u062a\u0649 \u0646\u06d0\u0645\u06d5\u061f "
+    ],
+    "uzbek": [
+        "hayotning maqsadi nima? "
+    ],
+    "vietnamese": [
+        "m\u1ee5c \u0111\u00edch c\u1ee7a cu\u1ed9c s\u1ed1ng l\u00e0 g\u00ec? "
+    ],
+    "welsh": [
+        "beth yw pwrpas bywyd? "
+    ],
+    "xhosa": [
+        "yintoni injongo yobomi? "
+    ],
+    "yiddish": [
+        "\u05d5\u05d5\u05d0\u05b8\u05e1 \u05d0\u05d9\u05d6 \u05d3\u05e2\u05e8 \u05e6\u05d9\u05dc \u05e4\u05d5\u05df \u05dc\u05e2\u05d1\u05df? ",
+        "vos iz der tsil fun lebn?"
+    ],
+    "yoruba": [
+        "kini idi aye? "
+    ],
+    "zulu": [
+        "iyini injongo yokuphila? "
+    ]
+}
