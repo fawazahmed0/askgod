@@ -1139,9 +1139,10 @@ async function showResult (verses) {
   // Form link according to selected language
   const linkFormed = editionsLink + '/' + editionSelected + '.min.json'
   const [translation] = await getTranslations([linkFormed])
-  // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
-  verses = verses.map(e => e.split(',').map(e => parseInt(e)))
+
   if (verses.length > 0) {
+   // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
+  verses = verses.map(e => e.split(',').map(e => parseInt(e)))
   // remove the old verses and spinning wheel etc
     $('#versescolumn').empty()
     // Add the card element, so verses get shown in cards
@@ -1221,17 +1222,16 @@ window.changeLang = async function changeLang () {
   // Remove latin/latinD from dropdown language
   const langSelectedClean = langSelected.replace(/.(latin|latind)$/i, '').trim()
   let translatedHintArr = []
-  for (const [key, value] of Object.entries(hintQuestionJSON)) {
-    if (key === langSelectedClean.toLowerCase()) {
+  for (const [key, value] of Object.entries(hintQuestionJSON)) 
+    if (key === langSelectedClean.toLowerCase()) 
        translatedHintArr = value
-       }
-  }
-
-  for (const [key, value] of Object.entries(proclaimJSON)) {
-    if (key === langSelectedClean.toLowerCase()) {
+       
+  
+  for (const [key, value] of Object.entries(proclaimJSON)) 
+    if (key === langSelectedClean.toLowerCase()) 
        proclaimMsg = value.join('<br>')
-       }
-  }
+       
+  
 
   // Remove the old values/hint questions & append english hint question
   $('#hintplaceholder').empty()
