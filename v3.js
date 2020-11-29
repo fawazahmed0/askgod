@@ -1112,8 +1112,12 @@ window.beginSearch = async function beginSearch () {
 }
 
 async function showResult (verses) {
+  const langSelected = $('#langdropdown option:selected').text()
+  const editionSelected = $('#langdropdown').val().trim()
+
+  document.cookie = "language="+langSelected+"; expires=Fri, 31 Dec 9999 23:59:59 GMT"
   // Form link according to selected language
-  const linkFormed = editionsLink + '/' + $('#langdropdown').val().trim() + '.min.json'
+  const linkFormed = editionsLink + '/' + editionSelected + '.min.json'
   const [translation] = await getTranslations([linkFormed])
   // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
   verses = verses.map(e => e.split(',').map(e => parseInt(e)))
@@ -1135,7 +1139,12 @@ async function showResult (verses) {
 function createDropdown () {
   const dropdownObj = {}
   // Default lang to select
-  const DefaultLang = 'English'
+  let DefaultLang = 'English'
+  let cookies = document.cookie.split('; ')
+  cookies = cookies.filter(e=>e.startsWith('language'))
+  if(cookies.length>0)
+  DefaultLang = cookies[0].split('=')[1]
+
 
   for (const value of Object.values(editionsJSON)) {
     dropdownObj[value.language] = value.name
@@ -1180,3 +1189,4 @@ window.changeLang = async function changeLang () {
 function getRandomNo (max) {
   return Math.floor(Math.random() * Math.floor(max))
 }
+
