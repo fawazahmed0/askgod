@@ -3,10 +3,9 @@
 import 'regenerator-runtime/runtime'
 // Fix issue for parcel jquery script
 // https://github.com/parcel-bundler/parcel/issues/333#issuecomment-504552272
-//https://www.npmjs.com/package/jquery
-import $ from "jquery";
+// https://www.npmjs.com/package/jquery
+import $ from 'jquery'
 import * as difflib from './difflib.js'
-
 
 // Change link here based on UTC date, day of month
 // Add another heroku link here
@@ -32,8 +31,6 @@ let translationsArr
 
 let editionsJSON
 
-
-
 const gestaltThreshold = 0.60
 
 // JSON containing already searched verses from node side
@@ -41,14 +38,14 @@ const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/q
 // Stores the question verses JSON
 let questionVerses
 
-  // Easier to Understand editions
-let preferredEditions = {'Arabic':'ara-sirajtafseer','English':'eng-ummmuhammad','Urdu':'urd-abulaalamaududi'}
+// Easier to Understand editions
+const preferredEditions = { Arabic: 'ara-sirajtafseer', English: 'eng-ummmuhammad', Urdu: 'urd-abulaalamaududi' }
 
-      // Have to translate this in different languages
-let proclaimMsg  = 'God only asks to accept that there is none worthy of worship except him'
+// Have to translate this in different languages
+const proclaimMsg = 'God only asks to accept that there is none worthy of worship except him'
 
-  // Stores the current confirmed Verses
-let gloConfirmedVerses = [];
+// Stores the current confirmed Verses
+let gloConfirmedVerses = []
 
 // Number of verses in quran
 // const VERSE_LENGTH = 6236
@@ -61,7 +58,7 @@ const CHAPTER_LENGTH = 114
 const numberPattern = /(?<!\d)[0-2]?\d{1,2}(?!\d)/gi
 
 // Register Service worker for Add to Home Screen option to work
-if ('serviceWorker' in navigator) {   navigator.serviceWorker.register('service-worker.js')}
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js') }
 
 // call this only once
 async function oneTimeFunc () {
@@ -78,8 +75,8 @@ async function oneTimeFunc () {
   setupDB()
   // Create the dropdown
   createDropdown()
-  //var abc = document.getElementById('langdropdown')
-//abc.addEventListener('change', showResult (gloConfirmedVerses));
+  // var abc = document.getElementById('langdropdown')
+// abc.addEventListener('change', showResult (gloConfirmedVerses));
 }
 
 // Return english translated text for the given string
@@ -115,7 +112,7 @@ async function getInferredVerses (query) {
   try {
     saveToDB(query)
   } catch (error) {
-      console.error(error)
+    console.error(error)
   }
   // Translate query to english
   const engQuery = await translate(query)
@@ -225,14 +222,12 @@ async function corsHerokuFetch (link) {
     const response = await fetch(corsHeroku + '/' + link)
 
     const result = await response.text()
-  
+
     return result
-    
   } catch (error) {
     console.error(error)
     return ''
   }
-
 }
 
 // Fetch links using cloudflare
@@ -242,17 +237,14 @@ async function corsCloudflareFetch (linksarr) {
       method: 'POST',
       body: JSON.stringify(linksarr)
     })
-  
+
     const result = await response.text()
-  
+
     return result
-    
   } catch (error) {
     console.error(error)
     return ''
-    
   }
-
 }
 
 // optimizes a flat array of 6236 length to optimized array
@@ -273,8 +265,6 @@ function qArrayOptimzer (arr) {
 // Sends the searchQuery to Google forms/spreadsheet
 // It can be downloaded from https://docs.google.com/spreadsheets/d/1THkt6fNsxKPQ2aE1GDnlzWzT9dt_CHmMijjScUw9z0s/gviz/tq?tqx=out:csv
 function setupDB () {
-  // Make this function as empty ,so it can only be called once
-  setupDB = function () { }
   const entryname = 'entry.496077876'
   const formaction = 'https://docs.google.com/forms/d/e/1FAIpQLSd8nWN872r2l1VihernpIfBL1RV-irGjANQAYl-89DVDmTVug/formResponse'
 
@@ -1088,31 +1078,31 @@ const initVar = oneTimeFunc()
 // https://github.com/parcel-bundler/parcel/issues/1618
 // https://stackoverflow.com/a/57603027
 // Gets called on search button being clicked
-window.beginSearch =  async function beginSearch () {
+window.beginSearch = async function beginSearch () {
   // Get search query value
   const searchQuery = document.getElementById('searchquery').value
   if (searchQuery === '') { return }
-// 
-// Show as loading spinning wheel,only if there isn't any other
-if($('#spinningwheel').length==0)
-      $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
+  //
+  // Show as loading spinning wheel,only if there isn't any other
+  if ($('#spinningwheel').length === 0) {
+    $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
       <div class="spinner-border m-5" role="status">
       <span class="visually-hidden">Loading...</span>
       </div> </div>`)
+  }
 
-      let confirmedVerses = []
-      try {
-          // Fetch verses
-   confirmedVerses = await getInferredVerses(searchQuery)
-  // store the confirmed verses in globally accessible variable
-   gloConfirmedVerses = confirmedVerses
-      } catch (error) {
-        console.error(error)    
-      }
+  let confirmedVerses = []
+  try {
+    // Fetch verses
+    confirmedVerses = await getInferredVerses(searchQuery)
+    // store the confirmed verses in globally accessible variable
+    gloConfirmedVerses = confirmedVerses
+  } catch (error) {
+    console.error(error)
+  }
 
   // If no verse retrieved or there was error in retreival, then remove the spinning wheel
-  if(confirmedVerses.length==0)
-  $('#spinningwheel').remove()
+  if (confirmedVerses.length === 0) { $('#spinningwheel').remove() }
 
   console.log(confirmedVerses)
   // Show the result in the page
@@ -1121,26 +1111,22 @@ if($('#spinningwheel').length==0)
 
 async function showResult (verses) {
   // Form link according to selected language
-  let linkFormed = editionsLink+'/'+$('#langdropdown').val().trim()+'.min.json'
+  const linkFormed = editionsLink + '/' + $('#langdropdown').val().trim() + '.min.json'
   const [translation] = await getTranslations([linkFormed])
   // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
   verses = verses.map(e => e.split(',').map(e => parseInt(e)))
-  if(verses.length>0){
+  if (verses.length > 0) {
   // remove the old verses and spinning wheel etc
-  $('#versescolumn').empty()
-  // Add the card element, so verses get shown in cards
-  $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
-  
+    $('#versescolumn').empty()
+    // Add the card element, so verses get shown in cards
+    $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
 
-  for (const [chap, ver] of verses) {
-    $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + translation[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
+    for (const [chap, ver] of verses) {
+      $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + translation[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
+    }
+
+    $('#verseslist').append('<li class="list-group-item p-2 bg-dark text-white" dir="auto">' + proclaimMsg + '</li>')
   }
-
-  $('#verseslist').append('<li class="list-group-item p-2 bg-dark text-white" dir="auto">'+proclaimMsg+'</li>')
-
-
-
-}
 }
 
 // Creates and add listing to the dropdown based on editions.json
@@ -1149,14 +1135,12 @@ function createDropdown () {
   // Default lang to select
   const DefaultLang = 'English'
 
-  for (const [key, value] of Object.entries(editionsJSON)) {
+  for (const value of Object.values(editionsJSON)) {
     dropdownObj[value.language] = value.name
   }
 
-  //Set Preferred Editions as they are easier to understand
-  for(const [key, value] of Object.entries(preferredEditions))
-      dropdownObj[key] = value
-
+  // Set Preferred Editions as they are easier to understand
+  for (const [key, value] of Object.entries(preferredEditions)) { dropdownObj[key] = value }
 
   // add lang+latin key if edition exists
   for (const [key, value] of Object.entries(dropdownObj)) {
@@ -1169,9 +1153,7 @@ function createDropdown () {
 
   const sortedDropDown = sortObjByKeys(dropdownObj)
 
-  for (const [key, value] of Object.entries(sortedDropDown))
-    { $('#langdropdown').append('<option value="' + value + '">' + key + '</option>') }
-  
+  for (const [key, value] of Object.entries(sortedDropDown)) { $('#langdropdown').append('<option value="' + value + '">' + key + '</option>') }
 
   // If cookies are set then use that to set language, else set to English as default
   $('#langdropdown option').filter(function () {
@@ -1187,6 +1169,6 @@ function sortObjByKeys (obj) {
   return sortedObj
 }
 
-window.changeLang = async function changeLang(){
-  await showResult (gloConfirmedVerses)
+window.changeLang = async function changeLang () {
+  await showResult(gloConfirmedVerses)
 }
