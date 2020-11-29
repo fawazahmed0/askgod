@@ -42,6 +42,8 @@ const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/q
 // Stores the question verses JSON
 let questionVerses
 
+const purposeQuestionLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/hintquestion.min.json'
+
 // Easier to Understand editions
 const preferredEditions = { Arabic: 'ara-sirajtafseer', English: 'eng-ummmuhammad', Urdu: 'urd-abulaalamaududi' }
 
