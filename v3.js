@@ -36,13 +36,29 @@ const gestaltThreshold = 0.60
 const UTCDateStr = new Date().toISOString().substring(0, 10)
 
 const avoidCache = '?d=' + UTCDateStr
-
+const askGodLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/'
 // JSON containing already searched verses from node side
-const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/questionverses.min.json' + avoidCache
+const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
 // Stores the question verses JSON
 let questionVerses
 
-const purposeQuestionLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/hintquestion.min.json'
+const hintQuestionLink = askGodLink + 'hintquestion.min.json'
+
+const engHintQues = 'What is the purpose of life?'
+// should be placed somewhere else
+let hintQuestionJSON
+
+// Replace google translate named languages to dropdown named languages, used for multi language showing
+const googToDropdownLang = {
+  'myanmar(burmese)': 'burmese',
+  pashto: 'pushto',
+  uyghur: 'uighur',
+  punjabi: 'panjabi',
+  kyrgyz: 'kirghiz',
+  'kurdish(kurmanji)': 'kurmanji',
+  sesotho:
+'sotho'
+}
 
 // Easier to Understand editions
 const preferredEditions = { Arabic: 'ara-sirajtafseer', English: 'eng-ummmuhammad', Urdu: 'urd-abulaalamaududi' }
@@ -74,6 +90,8 @@ async function oneTimeFunc () {
   translationsArr = await getTranslations(translationLinks);
   // Stores the question verses JSON
   [questionVerses] = await getLinksJSON([questionVerseLink]);
+  // Get hint question JSON
+  [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
   // Editions JSON from quran api
   [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
   // This func is called only once, next time it is just an empty block of code
@@ -1114,10 +1132,7 @@ window.beginSearch = async function beginSearch () {
 }
 
 async function showResult (verses) {
-  const langSelected = $('#langdropdown option:selected').text()
   const editionSelected = $('#langdropdown').val().trim()
-  // Save selected langauge in cookie, to allow dropdown selection later based on cookie value
-  document.cookie = 'language=' + langSelected + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
   // Form link according to selected language
   const linkFormed = editionsLink + '/' + editionSelected + '.min.json'
   const [translation] = await getTranslations([linkFormed])
@@ -1138,7 +1153,7 @@ async function showResult (verses) {
 }
 
 // Creates and add listing to the dropdown based on editions.json
-function createDropdown () {
+async function createDropdown () {
   const dropdownObj = {}
   // Default lang to select
   let langToSelect = 'English'
@@ -1171,6 +1186,9 @@ function createDropdown () {
   $('#langdropdown option').filter(function () {
     return ($(this).text() === langToSelect) // To select Blue
   }).prop('selected', true)
+
+  // Call change language to only fetch the edition for selected language
+  window.changeLang()
 }
 
 // Sorts an object by keys and returns the sorted object
@@ -1182,6 +1200,32 @@ function sortObjByKeys (obj) {
 }
 
 window.changeLang = async function changeLang () {
+  const langSelected = $('#langdropdown option:selected').text()
+  // Save selected langauge in cookie, to allow dropdown selection later based on cookie value
+  document.cookie = 'language=' + langSelected + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
+
+  /* // code to check which dropdown languages are not tallying with google translate languages, place it at createDropdown () to test
+  let [hintQuestion] = await getLinksJSON([hintQuestionLink]);
+  console.log(Object.keys(dropdownObj).filter(e=>!Object.keys(hintQuestion).includes(e.toLowerCase())))
+  */
+
+  // Replace google translate named languages to dropdown named languages, used for multi language showing
+  for (const [key, value] of Object.entries(googToDropdownLang)) {
+    hintQuestionJSON[value] = hintQuestionJSON[key]
+  }
+
+  // Remove latin/latinD from dropdown language
+  const langSelectedClean = langSelected.replace(/.(latin|latind)$/i, '').trim()
+  let translatedHintArr = []
+  for (const [key, value] of Object.entries(hintQuestionJSON)) {
+    if (key === langSelectedClean.toLowerCase()) { translatedHintArr = value }
+  }
+  // Remove the old values/hint questions & append english hint question
+  $('#hintplaceholder').empty()
+  $('#hintplaceholder').append('<div class="carousel-item active text-center">' + engHintQues + '</div>')
+  // Add the translated hints
+  for (const val of translatedHintArr) { $('#hintplaceholder').append('<div class="carousel-item text-center">' + val + '</div>') }
+  // Show the result, if exists
   await showResult(gloConfirmedVerses)
 }
 
