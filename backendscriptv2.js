@@ -48,9 +48,10 @@ const questionVerses = JSON.parse(questionVersesStr)
 // const googleCodesLink = apiLink + '/isocodes/google-codes.min.json'
 
 //  english translation editions to use in lunr
-const editionNames = ['eng-ummmuhammad.min.json', 'eng-abdullahyusufal.min.json', 'eng-muhammadtaqiudd.min.json', 'eng-mohammedmarmadu.min.json', 'eng-maududi.min.json', 'eng-safikaskas.min.json', 'eng-wahiduddinkhan.min.json', 'eng-ajarberry.min.json']
+const editionNames = ['eng-ummmuhammad', 'eng-abdullahyusufal', 'eng-muhammadtaqiudd', 'eng-mohammedmarmadu', 'eng-maududi', 'eng-safikaskas', 'eng-wahiduddinkhan', 'eng-ajarberry']
 // Contains english translation links to use in lunr
-const translationLinks = editionNames.map(e => editionsLink + '/' + e)
+const translationLinks = editionNames.map(e => editionsLink + '/' + e + '.min.json')
+
 
 // numberpattern that match numbers less than 300 and with negative lookbehind and negative lookahead digits
 //  i.e no digit front and end of match
