@@ -33,8 +33,12 @@ let editionsJSON
 
 const gestaltThreshold = 0.60
 
+const UTCDateStr = new Date().toISOString().substring(0,10)
+
+const avoidCache = '?d='+UTCDateStr
+
 // JSON containing already searched verses from node side
-const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/questionverses.min.json'
+const questionVerseLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/questionverses.min.json'+avoidCache
 // Stores the question verses JSON
 let questionVerses
 
@@ -75,8 +79,6 @@ async function oneTimeFunc () {
   setupDB()
   // Create the dropdown
   createDropdown()
-  // var abc = document.getElementById('langdropdown')
-// abc.addEventListener('change', showResult (gloConfirmedVerses));
 }
 
 // Return english translated text for the given string
@@ -116,8 +118,8 @@ async function getInferredVerses (query) {
   }
   // Translate query to english
   const engQuery = await translate(query)
-  // Get google search result links
-  const googLinks = await getGoogleLinks(engQuery.trim() + ' in quran')
+  // Get google search result links , add space repeat to avoid query caching
+  const googLinks = await getGoogleLinks(engQuery.trim() +" ".repeat(getRandomNo(3)) +' in quran')
   // Fetch google searched result links
   const htmlstr = await linksFetcher(googLinks)
   // convert html to string, it may throw error while parsing html to string
@@ -1171,4 +1173,10 @@ function sortObjByKeys (obj) {
 
 window.changeLang = async function changeLang () {
   await showResult(gloConfirmedVerses)
+}
+
+// Returns random number, generates random less than the input argument
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
+function getRandomNo (max) {
+  return Math.floor(Math.random() * Math.floor(max))
 }
