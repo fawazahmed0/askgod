@@ -3,8 +3,8 @@
     "name":"AskGod",
     "start_url":"/askgod/",
     "display":"standalone",
-    "theme_color":"#00acc1",
-    "background_color":"#fff",
+    "theme_color":"#007bff",
+    "background_color":"#ffffff",
     "icons": [
       {
        "src": "/icons/android-icon-36x36.png",
