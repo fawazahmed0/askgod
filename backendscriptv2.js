@@ -147,7 +147,7 @@ async function getGoogleLinks (query) {
 function htmlToString (htmlString) {
   let str = $.parseHTML(htmlString).reduce((full, val) => full + ' ' + val.textContent)
   // removing css,html,links,ISBN,17+ character length,multiple spaces from str to narrow down the search
-  str = str.replace(/<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/gi, ' ').replace(/<([A-Z][A-Z0-9]*)>.*?<\/\1>/gi, ' ').replace(/<([A-Z][A-Z0-9]*)\b[^>]*\/?>(.*?)/gi, ' ').replace(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi, ' ').replace(/(?<=\s)[^ ]*\s*\{[^\}]+\:[^\}]+\}/gi, ' ').replace(/[^\s]{17,}/gi, ' ').replace(/\d{4,}/gi, ' ').replace(/\s\s+/g, ' ')
+  str = str.replace(/<([A-Z][A-Z0-9]*)\b[^>]*>(.*?)<\/\1>/gi, ' ').replace(/<([A-Z][A-Z0-9]*)>.*?<\/\1>/gi, ' ').replace(/<([A-Z][A-Z0-9]*)\b[^>]*\/?>(.*?)/gi, ' ').replace(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi, ' ').replace(/(.|@).+?\{[^\}]+\:[^\}]+\}/gi, ' ').replace(/[^\s]{17,}/gi, ' ').replace(/\d{4,}/gi, ' ').replace(/\s\s+/g, ' ')
 
   return str
 }
