@@ -1,3 +1,5 @@
+// This is the main script
+
 // Fix issue for parcel/babel, for async await thing for old browser, or only support new browsers with async await functionality
 // https://flaviocopes.com/parcel-regeneratorruntime-not-defined/
 import 'regenerator-runtime/runtime'
