@@ -3,10 +3,10 @@
   "main": "backendscriptv2.js",
   "dependencies": {
     "playwright": "~1.6.2",
-    "node-fetch" : "latest",
-    "jsdom" : "latest",
-    "jquery" : "latest",
-    "difflib" : "latest"
+    "node-fetch": "latest",
+    "jsdom": "latest",
+    "jquery": "latest",
+    "difflib": "latest"
   },
   "repository": {
     "type": "git",
