@@ -1,0 +1,83 @@
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for branch 1 and on start directory, command.txt file changes or by manually running the workflow from actions tab
+on:
+  schedule:
+    - cron: '0 */5 * * *'  # every 5 hours
+
+  workflow_dispatch:
+
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+
+      # Partial clone
+      - name: clone
+        shell: bash
+        run: |
+          REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone --depth 1 $REPO .
+
+
+      
+      # we need to upgrade the pip ,so we can get the cache directory in muliple os using single command
+      # we need to upgrade the setuptools ,so that we can install googletrans
+      - name: Upgrading pip in unix like environments
+        if: ${{ ! contains(runner.os, 'windows') }}
+        run: python3 -m pip install --upgrade pip setuptools wheel
+        shell: bash
+
+      - name: Upgrading pip in windows environment
+        if: ${{ contains(runner.os, 'windows') }}
+        run: py -3 -m pip install --upgrade pip setuptools wheel
+        shell: bash
+
+      - name: Get cache directories for npm and pip
+        id: cache-dir
+        shell: bash
+        run: |
+          echo "::set-output name=pipcache::$(pip3 cache dir)"
+          echo "::set-output name=npmcache::$(npm config get cache)"
+
+
+      - name: Trying to use the old cache if available
+        uses: actions/cache@v2
+        with:
+          path: |
+            ${{ steps.cache-dir.outputs.pipcache }}
+            ${{ steps.cache-dir.outputs.npmcache }}
+          key: ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-cache-${{ hashFiles('**/package.json') }}
+            ${{ runner.os }}-cache-${{ hashFiles('**/requirements.txt') }}
+            ${{ runner.os }}-cache-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        run: |
+          pip3 install -r requirements.txt
+          npm install
+      - name: Running the command
+        run: node backendscriptv2.js
+
+
+      # commiting and pushing changes
+      - name: commit and push
+        if: ${{ ! contains(env.mycmd, 'search') }}
+        shell: bash
+        run: |
+          git config --global user.email github-actions@github.com
+          git config --global user.name github-actions
+          git add -A
+          git commit -m "update questionverses.min.json"
+          git push
+

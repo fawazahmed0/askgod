@@ -118,7 +118,7 @@ async function linkFetcher (link) {
 // function that launches a browser
 async function launchBrowser () {
   browser = await firefox.launch({
-    headless: false
+    headless: true
   })
   context = await browser.newContext()
 }
