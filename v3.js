@@ -104,6 +104,7 @@ async function oneTimeFunc () {
   setupDB()
   // Create the dropdown
   createDropdown()
+  
 }
 
 // Return english translated text for the given string
