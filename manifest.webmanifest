@@ -3,7 +3,7 @@
     "name":"AskGod",
     "start_url":"/askgod/",
     "display":"standalone",
-    "theme_color":"#007bff",
+    "theme_color":"#0dcaf0",
     "background_color":"#ffffff",
     "icons": [
       {

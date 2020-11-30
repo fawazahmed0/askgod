@@ -10,3 +10,6 @@ click on file and then click on row numbers and drag and right click and click d
 
 in case you emptied the fields , the forms will not work and you will have to revert to previous version by going into 
 file -> version history , see version history, click the version and click restore
+
+To add data, directly use search bar or google forms https://docs.google.com/forms/d/e/1FAIpQLSd8nWN872r2l1VihernpIfBL1RV-irGjANQAYl-89DVDmTVug/viewform
+don't insert value direclty in the sheet
