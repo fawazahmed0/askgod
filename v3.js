@@ -32,10 +32,10 @@ let editionsJSON
 
 const gestaltThreshold = 0.60
 
-const UTCDateStr = new Date().toISOString().substring(0, 10)
-
-const avoidCache = '?d=' + UTCDateStr
 const askGodLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/'
+
+// const UTCDateStr = new Date().toISOString().substring(0, 10)
+// const avoidCache = '?d=' + UTCDateStr
 // JSON containing already searched verses from node side
 // const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
 // Use the below link during testing to fetch fresh values
@@ -1198,6 +1198,7 @@ async function createDropdown () {
 
   // If cookies are set then use that to set language, else set to English as default
   $('#langdropdown option').filter(function () {
+    // deepcode ignore UseArrowFunction: <please specify a reason of ignoring this>
     return ($(this).text() === langToSelect) // To select Blue
   }).prop('selected', true)
 

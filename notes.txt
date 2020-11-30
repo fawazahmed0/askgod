@@ -1,0 +1,2 @@
+refer parcel notes for how to deploy:
+https://github.com/fawazahmed0/web-notes/blob/main/parcel%20notes/parcel%20notes.txt
