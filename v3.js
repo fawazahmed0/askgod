@@ -65,8 +65,8 @@ const preferredEditions = { Arabic: 'ara-sirajtafseer', English: 'eng-ummmuhamma
 
 // Have to translate this in different languages
 const engProclaimMsg = 'God only asks to accept that there is none worthy of worship except him'
-let proclaimMsg;
-const proclaimLink = askGodLink+'proclaim.min.json'
+let proclaimMsg
+const proclaimLink = askGodLink + 'proclaim.min.json'
 let proclaimJSON
 // Stores the current confirmed Verses
 let gloConfirmedVerses = []
@@ -95,7 +95,7 @@ async function oneTimeFunc () {
   // Get hint question JSON
   [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
   // Get proclaim message JSON
-  [proclaimJSON] =  await getLinksJSON([proclaimLink]);
+  [proclaimJSON] = await getLinksJSON([proclaimLink]);
   // Editions JSON from quran api
   [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
   // This func is called only once, next time it is just an empty block of code
@@ -1122,8 +1122,7 @@ window.beginSearch = async function beginSearch () {
     // Fetch verses
     confirmedVerses = await getInferredVerses(searchQuery)
     // store the confirmed verses in globally accessible variable
-    if(confirmedVerses.length>0)
-    gloConfirmedVerses = confirmedVerses
+    if (confirmedVerses.length > 0) { gloConfirmedVerses = confirmedVerses }
   } catch (error) {
     console.error(error)
   }
@@ -1143,9 +1142,9 @@ async function showResult (verses) {
   const [translation] = await getTranslations([linkFormed])
 
   if (verses.length > 0) {
-   // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
-  verses = verses.map(e => e.split(',').map(e => parseInt(e)))
-  // remove the old verses and spinning wheel etc
+    // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
+    verses = verses.map(e => e.split(',').map(e => parseInt(e)))
+    // remove the old verses and spinning wheel etc
     $('#versescolumn').empty()
     // Add the card element, so verses get shown in cards
     $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
@@ -1224,16 +1223,14 @@ window.changeLang = async function changeLang () {
   // Remove latin/latinD from dropdown language
   const langSelectedClean = langSelected.replace(/.(latin|latind)$/i, '').trim()
   let translatedHintArr = []
-  for (const [key, value] of Object.entries(hintQuestionJSON)) 
-    if (key === langSelectedClean.toLowerCase()) 
-       translatedHintArr = value
-// Set proclaimMsg to english version, incase the below fails, the english will be fallback
+  for (const [key, value] of Object.entries(hintQuestionJSON)) {
+    if (key === langSelectedClean.toLowerCase()) { translatedHintArr = value }
+  }
+  // Set proclaimMsg to english version, incase the below fails, the english will be fallback
   proclaimMsg = engProclaimMsg
-  for (const [key, value] of Object.entries(proclaimJSON)) 
-    if (key === langSelectedClean.toLowerCase()) 
-       proclaimMsg = value.join('<br>')
-       
-  
+  for (const [key, value] of Object.entries(proclaimJSON)) {
+    if (key === langSelectedClean.toLowerCase()) { proclaimMsg = value.join('<br>') }
+  }
 
   // Remove the old values/hint questions & append english hint question
   $('#hintplaceholder').empty()
@@ -1242,10 +1239,35 @@ window.changeLang = async function changeLang () {
   for (const val of translatedHintArr) { $('#hintplaceholder').append('<div class="carousel-item text-center">' + val + '</div>') }
   // Show the result, if exists
   await showResult(gloConfirmedVerses)
+  // Change the donate url according to language
+  changeDonateURL(translatedHintArr)
 }
 
 // Returns random number, generates random less than the input argument
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 function getRandomNo (max) {
   return Math.floor(Math.random() * Math.floor(max))
+}
+
+// Donate link
+
+function changeDonateURL (hintArr) {
+  // Link to share
+  const shareLink = 'https://fawazahmed0.github.io/askgod'
+  // Text to place in share message
+  const shareMsg = hintArr.concat(engHintQues).join('\n')
+  // Donation page URL
+  const url = 'https://fawazahmed0.github.io/donate.html'
+
+  const encodedShareLink = encodeURIComponent(shareLink)
+  const encodedshareMsg = encodeURIComponent(shareMsg)
+  // keep the below empty
+  // Share button message to show when the button is collapse shown
+  const encodedShareBtnMsg = encodeURIComponent(' ')
+  // Message to show on page
+  const encodedMyMsg = encodeURIComponent(' ')
+
+  const fullurl = url + '?mymsg=' + encodedMyMsg + '&sharelink=' + encodedShareLink + '&smallsharetext=' + encodedshareMsg + '&largesharetext=' + encodedshareMsg + '&sharebtnmsg=' + encodedShareBtnMsg
+  // Set the url in the donate button
+  $('#donatebtn').prop('href', fullurl)
 }
