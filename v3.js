@@ -122,11 +122,20 @@ async function translate (str) {
 // Get the question verses from already saved JSON
 // returns empty array if no questions matches the query
 async function getQueryVerses (query) {
+  let cleanQuery  =cleanifyStr(query)
+  let passRatio = 0.95
   for (const val of questionVerses.values) {
-    if (val.questions.map(e=>e.toLowerCase().trim()).includes(query.toLowerCase().trim())) { return val.verses }
+    for(const question of val.questions){
+      if(getGestaltRatio (cleanifyStr(question)   ,  cleanQuery      )>passRatio)
+      return val.verses
+    }
   }
   return []
 }
+
+function cleanifyStr(str){
+  return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s\s+/g, ' ')
+  }
 
 // Takes query and returns chronologically sorted confirmed verses
 async function getInferredVerses (query) {
