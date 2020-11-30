@@ -1283,3 +1283,8 @@ function changeDonateURL (hintArr) {
   // Set the url in the donate button
   $('#donatebtn').prop('href', fullurl)
 }
+
+
+window.addEventListener("beforeinstallprompt", ev => { 
+window.alert("add to homescreen thing")
+});
