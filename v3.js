@@ -39,6 +39,9 @@ const avoidCache = '?d=' + UTCDateStr
 const askGodLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/'
 // JSON containing already searched verses from node side
 const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
+// Use the below link during testing to fetch fresh values
+// const questionVerseLink = 'https://raw.githubusercontent.com/fawazahmed0/askgod/main/questionverses.min.json'
+
 // Stores the question verses JSON
 let questionVerses
 
@@ -121,7 +124,7 @@ async function translate (str) {
 // returns empty array if no questions matches the query
 async function getQueryVerses (query) {
   for (const val of questionVerses.values) {
-    if (val.questions.includes(query.toLowerCase().trim())) { return val.verses }
+    if (val.questions.map(e=>e.toLowerCase().trim()).includes(query.toLowerCase().trim())) { return val.verses }
   }
   return []
 }
