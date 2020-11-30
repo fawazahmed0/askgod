@@ -1,7 +1,7 @@
 {
     "short_name":"AskGod",
     "name":"AskGod",
-    "start_url":"/",
+    "start_url":"/askgod",
     "display":"standalone",
     "theme_color":"#00acc1",
     "background_color":"#fff",
