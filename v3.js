@@ -38,9 +38,9 @@ const UTCDateStr = new Date().toISOString().substring(0, 10)
 const avoidCache = '?d=' + UTCDateStr
 const askGodLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/'
 // JSON containing already searched verses from node side
-const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
+// const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
 // Use the below link during testing to fetch fresh values
-// const questionVerseLink = 'https://raw.githubusercontent.com/fawazahmed0/askgod/main/questionverses.min.json'
+const questionVerseLink = 'https://raw.githubusercontent.com/fawazahmed0/askgod/main/questionverses.min.json'
 
 // Stores the question verses JSON
 let questionVerses
@@ -54,13 +54,12 @@ let hintQuestionJSON
 // Replace google translate named languages to dropdown named languages, used for multi language showing
 const googToDropdownLang = {
   'myanmar(burmese)': 'burmese',
-  pashto: 'pushto',
-  uyghur: 'uighur',
-  punjabi: 'panjabi',
-  kyrgyz: 'kirghiz',
+  'pashto': 'pushto',
+  'uyghur': 'uighur',
+ 'punjabi': 'panjabi',
+  'kyrgyz': 'kirghiz',
   'kurdish(kurmanji)': 'kurmanji',
-  sesotho:
-'sotho'
+  'sesotho':'sotho'
 }
 
 // Easier to Understand editions
