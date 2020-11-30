@@ -7,9 +7,8 @@ import 'regenerator-runtime/runtime'
 import $ from 'jquery'
 import * as difflib from './difflib.js'
 
-// Change link here based on UTC date, day of month
-// Add another heroku link here
-const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com', 'https://immense-castle-88569.herokuapp.com']
+// Change link based on UTC date, day of month to avoid using full dyno hours, links from two different accounts
+const corsHerokuLinks = ['https://immense-castle-88569.herokuapp.com', 'https://shrouded-everglades-56162.herokuapp.com']
 // Change from cc verified link to new heroku link from 11th day of month
 const corsHeroku = new Date().getUTCDate() > 10 ? corsHerokuLinks[0] : corsHerokuLinks[1]
 
