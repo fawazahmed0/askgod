@@ -1,2 +1,12 @@
 refer parcel notes for how to deploy:
 https://github.com/fawazahmed0/web-notes/blob/main/parcel%20notes/parcel%20notes.txt
+
+
+occationally delete rows in spreadsheet at :
+https://docs.google.com/spreadsheets/d/1THkt6fNsxKPQ2aE1GDnlzWzT9dt_CHmMijjScUw9z0s/edit#gid=867475662
+
+Remember do not empty the feilds, rather delete the rows, to delete multiple rows,
+click on file and then click on row numbers and drag and right click and click delete rows
+
+in case you emptied the fields , the forms will not work and you will have to revert to previous version by going into 
+file -> version history , see version history, click the version and click restore
