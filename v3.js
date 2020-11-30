@@ -83,7 +83,7 @@ const CHAPTER_LENGTH = 114
 const numberPattern = /(?<!\d)[0-2]?\d{1,2}(?!\d)/gi
 
 // Register Service worker for Add to Home Screen option to work
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js') }
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js') }
 
 // call this only once
 async function oneTimeFunc () {
