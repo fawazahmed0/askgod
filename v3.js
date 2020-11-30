@@ -53,12 +53,12 @@ let hintQuestionJSON
 // Replace google translate named languages to dropdown named languages, used for multi language showing
 const googToDropdownLang = {
   'myanmar(burmese)': 'burmese',
-  'pashto': 'pushto',
-  'uyghur': 'uighur',
- 'punjabi': 'panjabi',
-  'kyrgyz': 'kirghiz',
+  pashto: 'pushto',
+  uyghur: 'uighur',
+  punjabi: 'panjabi',
+  kyrgyz: 'kirghiz',
   'kurdish(kurmanji)': 'kurmanji',
-  'sesotho':'sotho'
+  sesotho: 'sotho'
 }
 
 // Easier to Understand editions
@@ -121,20 +121,19 @@ async function translate (str) {
 // Get the question verses from already saved JSON
 // returns empty array if no questions matches the query
 async function getQueryVerses (query) {
-  let cleanQuery  =cleanifyStr(query)
-  let passRatio = 0.95
+  const cleanQuery = cleanifyStr(query)
+  const passRatio = 0.95
   for (const val of questionVerses.values) {
-    for(const question of val.questions){
-      if(getGestaltRatio (cleanifyStr(question)   ,  cleanQuery      )>passRatio)
-      return val.verses
+    for (const question of val.questions) {
+      if (getGestaltRatio(cleanifyStr(question), cleanQuery) > passRatio) { return val.verses }
     }
   }
   return []
 }
 
-function cleanifyStr(str){
+function cleanifyStr (str) {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s\s+/g, ' ')
-  }
+}
 
 // Takes query and returns chronologically sorted confirmed verses
 async function getInferredVerses (query) {
