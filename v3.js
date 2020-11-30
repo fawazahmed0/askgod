@@ -64,7 +64,8 @@ const googToDropdownLang = {
 const preferredEditions = { Arabic: 'ara-sirajtafseer', English: 'eng-ummmuhammad', Urdu: 'urd-abulaalamaududi' }
 
 // Have to translate this in different languages
-let proclaimMsg = 'God only asks to accept that there is none worthy of worship except him'
+const engProclaimMsg = 'God only asks to accept that there is none worthy of worship except him'
+let proclaimMsg;
 const proclaimLink = askGodLink+'proclaim.min.json'
 let proclaimJSON
 // Stores the current confirmed Verses
@@ -1226,8 +1227,8 @@ window.changeLang = async function changeLang () {
   for (const [key, value] of Object.entries(hintQuestionJSON)) 
     if (key === langSelectedClean.toLowerCase()) 
        translatedHintArr = value
-       
-  
+// Set proclaimMsg to english version, incase the below fails, the english will be fallback
+  proclaimMsg = engProclaimMsg
   for (const [key, value] of Object.entries(proclaimJSON)) 
     if (key === langSelectedClean.toLowerCase()) 
        proclaimMsg = value.join('<br>')
