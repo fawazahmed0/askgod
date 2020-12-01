@@ -47,6 +47,11 @@ const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
 // Stores the question verses JSON
 let questionVerses
 
+
+// stores the dropdown selected translation
+let selectedTrans
+
+
 const hintQuestionLink = askGodLink + 'hintquestion.min.json'
 
 const engHintQues = 'What is the purpose of life?'
@@ -90,25 +95,25 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-w
 
 // call this only once
 async function oneTimeFunc () {
-  // Make this function as empty ,so it can only be called once
-  // initializer = function () {}
-  // Stores the question verses JSON
-    // Setup Google Forms as DB
+
+    
       // Editions JSON from quran api
   [editionsJSON] = await getLinksJSON([editionsLink + '.min.json']);
+        // Get hint question JSON
   [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
   // Get proclaim message JSON
   [proclaimJSON] = await getLinksJSON([proclaimLink]);
     // Create the dropdown
     createDropdown()
+    // Setup Google Forms as DB
     try {
       setupDB()
     } catch (error) {
       console.error(error)
     }
  
-      // Get hint question JSON
 
+  // Stores the question verses JSON
   [questionVerses] = await getLinksJSON([questionVerseLink]);
   // Get the Translations
   translationsArr = await getTranslations(translationLinks);
@@ -1152,18 +1157,22 @@ window.beginSearch = async function beginSearch () {
 
   console.log(confirmedVerses)
   // Show the result in the page
-  if(confirmedVerses.length > 0) 
   await showResult(confirmedVerses)
+}
+
+// edition name in iso3_name_xx format
+async function setSelectedEdition(){
+  const editionSelected = $('#langdropdown').val().trim()
+  // Form link according to selected language
+  const linkFormed = editionsLink + '/' + editionSelected + '.min.json';
+   [selectedTrans] = await getTranslations([linkFormed]);
+   
 }
 
 async function showResult (verses) {
 
 
   if (verses.length > 0) {
-    const editionSelected = $('#langdropdown').val().trim()
-    // Form link according to selected language
-    const linkFormed = editionsLink + '/' + editionSelected + '.min.json'
-    const [translation] = await getTranslations([linkFormed])
     // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
     verses = verses.map(e => e.split(',').map(e => parseInt(e)))
     // remove the old verses and spinning wheel etc
@@ -1172,7 +1181,7 @@ async function showResult (verses) {
     $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
 
     for (const [chap, ver] of verses) {
-      $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + translation[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
+      $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + selectedTrans[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
     }
 
     $('#verseslist').append('<li class="list-group-item p-2 bg-dark text-white" dir="auto">' + proclaimMsg + '</li>')
@@ -1215,7 +1224,7 @@ function createDropdown () {
     return ($(this).text() === langToSelect) // To select Blue
   }).prop('selected', true)
 
-  // Call change language to only fetch the edition for selected language
+  // Call change language
   window.changeLang()
 }
 
@@ -1227,7 +1236,7 @@ function sortObjByKeys (obj) {
   return sortedObj
 }
 
-window.changeLang =  function changeLang () {
+window.changeLang =  async function changeLang () {
   const langSelected = $('#langdropdown option:selected').text()
   // Save selected langauge in cookie, to allow dropdown selection later based on cookie value
   document.cookie = 'language=' + langSelected + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
@@ -1260,10 +1269,13 @@ window.changeLang =  function changeLang () {
   $('#hintplaceholder').append('<div class="carousel-item active text-center">' + engHintQues + '</div>')
   // Add the translated hints
   for (const val of translatedHintArr) { $('#hintplaceholder').append('<div class="carousel-item text-center">' + val + '</div>') }
+  // Set the selected edition in global variable
+  await setSelectedEdition()
   // Show the result, if exists
   showResult(gloConfirmedVerses)
   // Change the donate url according to language
   changeDonateURL(translatedHintArr)
+
 }
 
 // Returns random number, generates random less than the input argument
