@@ -47,10 +47,8 @@ const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
 // Stores the question verses JSON
 let questionVerses
 
-
 // stores the dropdown selected translation
 let selectedTrans
-
 
 const hintQuestionLink = askGodLink + 'hintquestion.min.json'
 
@@ -95,32 +93,27 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-w
 
 // call this only once
 async function oneTimeFunc () {
-
-    
-      // Editions JSON from quran api
+  // Editions JSON from quran api
   [editionsJSON] = await getLinksJSON([editionsLink + '.min.json']);
-        // Get hint question JSON
+  // Get hint question JSON
   [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
   // Get proclaim message JSON
-  [proclaimJSON] = await getLinksJSON([proclaimLink]);
-    // Create the dropdown
-    createDropdown()
-    // Setup Google Forms as DB
-    try {
-      setupDB()
-    } catch (error) {
-      console.error(error)
-    }
- 
+  [proclaimJSON] = await getLinksJSON([proclaimLink])
+  // Create the dropdown
+  createDropdown()
+  // Setup Google Forms as DB
+  try {
+    setupDB()
+  } catch (error) {
+    console.error(error)
+  }
 
   // Stores the question verses JSON
-  [questionVerses] = await getLinksJSON([questionVerseLink]);
+  [questionVerses] = await getLinksJSON([questionVerseLink])
   // Get the Translations
-  translationsArr = await getTranslations(translationLinks);
-
+  translationsArr = await getTranslations(translationLinks)
 
   // This func is called only once, next time it is just an empty block of code
-
 }
 
 // Return english translated text for the given string
@@ -1124,7 +1117,6 @@ return holderarr
 // Patterns that confirms the verse pattern
 const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), englishQuranName.map(e => e[0]))
 
-
 // parcel html cannot access function issue
 // https://github.com/parcel-bundler/parcel/issues/1618
 // https://stackoverflow.com/a/57603027
@@ -1161,17 +1153,14 @@ window.beginSearch = async function beginSearch () {
 }
 
 // edition name in iso3_name_xx format
-async function setSelectedEdition(){
+async function setSelectedEdition () {
   const editionSelected = $('#langdropdown').val().trim()
   // Form link according to selected language
   const linkFormed = editionsLink + '/' + editionSelected + '.min.json';
-   [selectedTrans] = await getTranslations([linkFormed]);
-   
+  [selectedTrans] = await getTranslations([linkFormed])
 }
 
 async function showResult (verses) {
-
-
   if (verses.length > 0) {
     // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
     verses = verses.map(e => e.split(',').map(e => parseInt(e)))
@@ -1236,7 +1225,7 @@ function sortObjByKeys (obj) {
   return sortedObj
 }
 
-window.changeLang =  async function changeLang () {
+window.changeLang = async function changeLang () {
   const langSelected = $('#langdropdown option:selected').text()
   // Save selected langauge in cookie, to allow dropdown selection later based on cookie value
   document.cookie = 'language=' + langSelected + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
@@ -1275,7 +1264,6 @@ window.changeLang =  async function changeLang () {
   showResult(gloConfirmedVerses)
   // Change the donate url according to language
   changeDonateURL(translatedHintArr)
-
 }
 
 // Returns random number, generates random less than the input argument
@@ -1294,7 +1282,7 @@ function changeDonateURL (hintArr) {
   // Donation page URL
   const url = 'https://fawazahmed0.github.io/donate.html'
   // Remove the donate for now
-  const nodonatebtn = "no";
+  const nodonatebtn = 'no'
 
   const encodedShareLink = encodeURIComponent(shareLink)
   const encodedshareMsg = encodeURIComponent(shareMsg)
@@ -1304,14 +1292,14 @@ function changeDonateURL (hintArr) {
   // Message to show on page
   const encodedMyMsg = encodeURIComponent(' ')
 
-  const fullurl = url + '?mymsg=' + encodedMyMsg + '&sharelink=' + encodedShareLink + '&smallsharetext=' + encodedshareMsg + '&largesharetext=' + encodedshareMsg + '&sharebtnmsg=' + encodedShareBtnMsg+'&nodonatebtn='+nodonatebtn
-  
+  const fullurl = url + '?mymsg=' + encodedMyMsg + '&sharelink=' + encodedShareLink + '&smallsharetext=' + encodedshareMsg + '&largesharetext=' + encodedshareMsg + '&sharebtnmsg=' + encodedShareBtnMsg + '&nodonatebtn=' + nodonatebtn
+
   // Set the url in the donate button
   $('#donatebtn').prop('href', fullurl)
 }
 
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
-let initVar;
+let initVar
 window.addEventListener('DOMContentLoaded', (event) => {
   initVar = oneTimeFunc()
-});
+})
