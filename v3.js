@@ -1208,7 +1208,7 @@ async function createDropdown () {
 
   // add lang+latin key if edition exists
   for (const [key, value] of Object.entries(dropdownObj)) {
-    const editionKey = value.replaceAll('-', '_')
+    const editionKey = value.replace(/-/gi, '_')
 
     if (editionsJSON[editionKey + '_lad']) { dropdownObj[key + ' LatinD'] = value + '-lad' }
 
