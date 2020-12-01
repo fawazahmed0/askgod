@@ -1282,7 +1282,7 @@ function changeDonateURL (hintArr) {
   // Message to show on page
   const encodedMyMsg = encodeURIComponent(' ')
 
-  const fullurl = url + '?mymsg=' + encodedMyMsg + '&sharelink=' + encodedShareLink + '&smallsharetext=' + encodedshareMsg + '&largesharetext=' + encodedshareMsg + '&sharebtnmsg=' + encodedShareBtnMsg+'&nodonatebtn='+nodonatebtn;
+  const fullurl = url + '?mymsg=' + encodedMyMsg + '&sharelink=' + encodedShareLink + '&smallsharetext=' + encodedshareMsg + '&largesharetext=' + encodedshareMsg + '&sharebtnmsg=' + encodedShareBtnMsg+'&nodonatebtn='+nodonatebtn
   // Set the url in the donate button
   $('#donatebtn').prop('href', fullurl)
 }
