@@ -1117,19 +1117,12 @@ return holderarr
 // Patterns that confirms the verse pattern
 const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), englishQuranName.map(e => e[0]))
 
- // Show as loading spinning wheel,only if there isn't any other
-function showSpinningWheel(){
-  if ($('#spinningwheel').length === 0) {
-    $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
-      <div class="spinner-border m-5" role="status">
-      <span class="visually-hidden">Loading...</span>
-      </div> </div>`)
-  }
-
-}
-
-function removeSpinningWheel(){
-  $('#spinningwheel').remove() 
+// edition name in iso3_name_xx format
+async function setSelectedEdition () {
+  const editionSelected = $('#langdropdown').val().trim()
+  // Form link according to selected language
+  const linkFormed = editionsLink + '/' + editionSelected + '.min.json';
+  [selectedTrans] = await getTranslations([linkFormed])
 }
 
 // parcel html cannot access function issue
@@ -1141,7 +1134,7 @@ window.beginSearch = async function beginSearch () {
   const searchQuery = document.getElementById('searchquery').value
   if (searchQuery === '') { return }
   // Show as loading spinning wheel,only if there isn't any other
-  showSpinningWheel();
+  showSpinningWheel()
 
   let confirmedVerses = []
   try {
@@ -1154,19 +1147,11 @@ window.beginSearch = async function beginSearch () {
   }
 
   // If no verse retrieved or there was error in retreival, then remove the spinning wheel
-  if (confirmedVerses.length === 0) { removeSpinningWheel();}
+  if (confirmedVerses.length === 0) { removeSpinningWheel() }
 
   console.log(confirmedVerses)
   // Show the result in the page
   await showResult(confirmedVerses)
-}
-
-// edition name in iso3_name_xx format
-async function setSelectedEdition () {
-  const editionSelected = $('#langdropdown').val().trim()
-  // Form link according to selected language
-  const linkFormed = editionsLink + '/' + editionSelected + '.min.json';
-  [selectedTrans] = await getTranslations([linkFormed])
 }
 
 async function showResult (verses) {
@@ -1236,8 +1221,7 @@ function sortObjByKeys (obj) {
 
 window.changeLang = async function changeLang () {
   // Show spinning wheel only if there are verses already shown in the page
- if(gloConfirmedVerses.length>0)
-  showSpinningWheel()
+  if (gloConfirmedVerses.length > 0) { showSpinningWheel() }
   const langSelected = $('#langdropdown option:selected').text()
   // Save selected langauge in cookie, to allow dropdown selection later based on cookie value
   document.cookie = 'language=' + langSelected + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
@@ -1310,6 +1294,20 @@ function changeDonateURL (hintArr) {
 
   // Set the url in the donate button
   $('#donatebtn').prop('href', fullurl)
+}
+
+// Show as loading spinning wheel,only if there isn't any other
+function showSpinningWheel () {
+  if ($('#spinningwheel').length === 0) {
+    $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
+      <div class="spinner-border m-5" role="status">
+      <span class="visually-hidden">Loading...</span>
+      </div> </div>`)
+  }
+}
+
+function removeSpinningWheel () {
+  $('#spinningwheel').remove()
 }
 
 // Call initializer function in the beginning itself, to fetch all necessary JSON's
