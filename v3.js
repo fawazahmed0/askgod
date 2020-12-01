@@ -93,20 +93,24 @@ async function oneTimeFunc () {
   // Make this function as empty ,so it can only be called once
   // initializer = function () {}
   // Stores the question verses JSON
-  [questionVerses] = await getLinksJSON([questionVerseLink]);
-  // Get the Translations
-  translationsArr = await getTranslations(translationLinks);
-  // Get hint question JSON
+    // Setup Google Forms as DB
+      // Editions JSON from quran api
+  [editionsJSON] = await getLinksJSON([editionsLink + '.min.json']);
   [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
   // Get proclaim message JSON
   [proclaimJSON] = await getLinksJSON([proclaimLink]);
-  // Editions JSON from quran api
-  [editionsJSON] = await getLinksJSON([editionsLink + '.min.json'])
+    // Create the dropdown
+    createDropdown()
+    setupDB()
+      // Get hint question JSON
+
+  [questionVerses] = await getLinksJSON([questionVerseLink]);
+  // Get the Translations
+  translationsArr = await getTranslations(translationLinks);
+
+
   // This func is called only once, next time it is just an empty block of code
-  // Setup Google Forms as DB
-  setupDB()
-  // Create the dropdown
-  createDropdown()
+
 }
 
 // Return english translated text for the given string
@@ -225,9 +229,17 @@ async function getTranslations (linksarr) {
 // https://www.shawntabrizi.com/code/programmatically-fetch-multiple-apis-parallel-using-async-await-javascript/
 // Get links async i.e in parallel
 async function getLinksJSON (urls) {
-  return await Promise.all(
-    urls.map(url => fetch(url).then(response => response.json()))
-  ).catch(console.error)
+  let somearr = []
+
+  for(let url of urls){
+let res = await fetch(url)
+let json = await res.json()
+somearr.push(json)
+
+
+  }
+       
+return somearr
 }
 
 // Takes links array to be fetched and returns merged html of all links
