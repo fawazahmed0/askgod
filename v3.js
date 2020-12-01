@@ -1167,12 +1167,13 @@ window.beginSearch = async function beginSearch () {
 }
 
 async function showResult (verses) {
-  const editionSelected = $('#langdropdown').val().trim()
-  // Form link according to selected language
-  const linkFormed = editionsLink + '/' + editionSelected + '.min.json'
-  const [translation] = await getTranslations([linkFormed])
+
 
   if (verses.length > 0) {
+    const editionSelected = $('#langdropdown').val().trim()
+    // Form link according to selected language
+    const linkFormed = editionsLink + '/' + editionSelected + '.min.json'
+    const [translation] = await getTranslations([linkFormed])
     // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
     verses = verses.map(e => e.split(',').map(e => parseInt(e)))
     // remove the old verses and spinning wheel etc
