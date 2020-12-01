@@ -36,13 +36,13 @@ const gestaltThreshold = 0.60
 
 const askGodLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/'
 
-// const UTCDateStr = new Date().toISOString().substring(0, 10)
-// const avoidCache = '?d=' + UTCDateStr
+const UTCDateStr = new Date().toISOString().substring(0, 10)
+const avoidCache = '?d=' + UTCDateStr
 // JSON containing already searched verses from node side
-// const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
+const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
 // Use the below link during testing to fetch fresh values
 // Change below to jsdelivr link when the size increase, for faster response
-const questionVerseLink = 'https://raw.githubusercontent.com/fawazahmed0/askgod/main/questionverses.min.json'
+// const questionVerseLink = 'https://raw.githubusercontent.com/fawazahmed0/askgod/main/questionverses.min.json'
 
 // Stores the question verses JSON
 let questionVerses
