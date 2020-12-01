@@ -101,7 +101,13 @@ async function oneTimeFunc () {
   [proclaimJSON] = await getLinksJSON([proclaimLink]);
     // Create the dropdown
     createDropdown()
-    setupDB()
+    try {
+      setupDB()
+    } catch (error) {
+      console.error(error)
+      console.log("see why this fails")
+    }
+ 
       // Get hint question JSON
 
   [questionVerses] = await getLinksJSON([questionVerseLink]);
@@ -1156,6 +1162,7 @@ window.beginSearch = async function beginSearch () {
 
   console.log(confirmedVerses)
   // Show the result in the page
+  if(confirmedVerses.length > 0) 
   await showResult(confirmedVerses)
 }
 
