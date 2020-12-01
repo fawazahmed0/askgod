@@ -1117,6 +1117,21 @@ return holderarr
 // Patterns that confirms the verse pattern
 const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), englishQuranName.map(e => e[0]))
 
+ // Show as loading spinning wheel,only if there isn't any other
+function showSpinningWheel(){
+  if ($('#spinningwheel').length === 0) {
+    $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
+      <div class="spinner-border m-5" role="status">
+      <span class="visually-hidden">Loading...</span>
+      </div> </div>`)
+  }
+
+}
+
+function removeSpinningWheel(){
+  $('#spinningwheel').remove() 
+}
+
 // parcel html cannot access function issue
 // https://github.com/parcel-bundler/parcel/issues/1618
 // https://stackoverflow.com/a/57603027
@@ -1125,14 +1140,8 @@ window.beginSearch = async function beginSearch () {
   // Get search query value
   const searchQuery = document.getElementById('searchquery').value
   if (searchQuery === '') { return }
-  //
   // Show as loading spinning wheel,only if there isn't any other
-  if ($('#spinningwheel').length === 0) {
-    $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
-      <div class="spinner-border m-5" role="status">
-      <span class="visually-hidden">Loading...</span>
-      </div> </div>`)
-  }
+  showSpinningWheel();
 
   let confirmedVerses = []
   try {
@@ -1145,7 +1154,7 @@ window.beginSearch = async function beginSearch () {
   }
 
   // If no verse retrieved or there was error in retreival, then remove the spinning wheel
-  if (confirmedVerses.length === 0) { $('#spinningwheel').remove() }
+  if (confirmedVerses.length === 0) { removeSpinningWheel();}
 
   console.log(confirmedVerses)
   // Show the result in the page
@@ -1226,6 +1235,9 @@ function sortObjByKeys (obj) {
 }
 
 window.changeLang = async function changeLang () {
+  // Show spinning wheel only if there are verses already shown in the page
+ if(gloConfirmedVerses.length>0)
+  showSpinningWheel()
   const langSelected = $('#langdropdown option:selected').text()
   // Save selected langauge in cookie, to allow dropdown selection later based on cookie value
   document.cookie = 'language=' + langSelected + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
@@ -1260,9 +1272,11 @@ window.changeLang = async function changeLang () {
   for (const val of translatedHintArr) { $('#hintplaceholder').append('<div class="carousel-item text-center">' + val + '</div>') }
   // Set the selected edition in global variable
   await setSelectedEdition()
+  removeSpinningWheel()
   // Show the result, if exists
   showResult(gloConfirmedVerses)
   // Change the donate url according to language
+
   changeDonateURL(translatedHintArr)
 }
 
