@@ -92,10 +92,10 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-w
 async function oneTimeFunc () {
   // Make this function as empty ,so it can only be called once
   // initializer = function () {}
-  // Get the Translations
-  translationsArr = await getTranslations(translationLinks);
   // Stores the question verses JSON
   [questionVerses] = await getLinksJSON([questionVerseLink]);
+  // Get the Translations
+  translationsArr = await getTranslations(translationLinks);
   // Get hint question JSON
   [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
   // Get proclaim message JSON
