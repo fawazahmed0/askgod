@@ -105,7 +105,6 @@ async function oneTimeFunc () {
       setupDB()
     } catch (error) {
       console.error(error)
-      console.log("see why this fails")
     }
  
       // Get hint question JSON
@@ -235,17 +234,9 @@ async function getTranslations (linksarr) {
 // https://www.shawntabrizi.com/code/programmatically-fetch-multiple-apis-parallel-using-async-await-javascript/
 // Get links async i.e in parallel
 async function getLinksJSON (urls) {
-  let somearr = []
-
-  for(let url of urls){
-let res = await fetch(url)
-let json = await res.json()
-somearr.push(json)
-
-
-  }
-       
-return somearr
+  return await Promise.all(
+    urls.map(url => fetch(url).then(response => response.json()))
+  ).catch(console.error)
 }
 
 // Takes links array to be fetched and returns merged html of all links
@@ -1127,8 +1118,7 @@ return holderarr
 
 // Patterns that confirms the verse pattern
 const goodPatterns = confirmPattern.concat(arabicQuranName.map(e => e[0]), englishQuranName.map(e => e[0]))
-// Call initializer function in the beginning itself, to fetch all necessary JSON's
-const initVar = oneTimeFunc()
+
 
 // parcel html cannot access function issue
 // https://github.com/parcel-bundler/parcel/issues/1618
@@ -1190,7 +1180,7 @@ async function showResult (verses) {
 }
 
 // Creates and add listing to the dropdown based on editions.json
-async function createDropdown () {
+function createDropdown () {
   const dropdownObj = {}
   // Default lang to select
   let langToSelect = 'English'
@@ -1237,7 +1227,7 @@ function sortObjByKeys (obj) {
   return sortedObj
 }
 
-window.changeLang = async function changeLang () {
+window.changeLang =  function changeLang () {
   const langSelected = $('#langdropdown option:selected').text()
   // Save selected langauge in cookie, to allow dropdown selection later based on cookie value
   document.cookie = 'language=' + langSelected + '; expires=Fri, 31 Dec 9999 23:59:59 GMT'
@@ -1271,7 +1261,7 @@ window.changeLang = async function changeLang () {
   // Add the translated hints
   for (const val of translatedHintArr) { $('#hintplaceholder').append('<div class="carousel-item text-center">' + val + '</div>') }
   // Show the result, if exists
-  await showResult(gloConfirmedVerses)
+  showResult(gloConfirmedVerses)
   // Change the donate url according to language
   changeDonateURL(translatedHintArr)
 }
@@ -1307,3 +1297,9 @@ function changeDonateURL (hintArr) {
   // Set the url in the donate button
   $('#donatebtn').prop('href', fullurl)
 }
+
+// Call initializer function in the beginning itself, to fetch all necessary JSON's
+let initVar;
+window.addEventListener('DOMContentLoaded', (event) => {
+  initVar = oneTimeFunc()
+});
