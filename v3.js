@@ -41,6 +41,7 @@ const askGodLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/askgod@main/'
 // JSON containing already searched verses from node side
 // const questionVerseLink = askGodLink + 'questionverses.min.json' + avoidCache
 // Use the below link during testing to fetch fresh values
+// Change below to jsdelivr link when the size increase, for faster response
 const questionVerseLink = 'https://raw.githubusercontent.com/fawazahmed0/askgod/main/questionverses.min.json'
 
 // Stores the question verses JSON
