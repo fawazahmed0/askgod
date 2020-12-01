@@ -52,7 +52,6 @@ const editionNames = ['eng-ummmuhammad', 'eng-abdullahyusufal', 'eng-muhammadtaq
 // Contains english translation links to use in lunr
 const translationLinks = editionNames.map(e => editionsLink + '/' + e + '.min.json')
 
-
 // numberpattern that match numbers less than 300 and with negative lookbehind and negative lookahead digits
 //  i.e no digit front and end of match
 const numberPattern = /(?<!\d)[0-2]?\d{1,2}(?!\d)/gi
@@ -160,34 +159,34 @@ async function inference () {
   const [cleanSearchArr] = await Promise.all([getCleanDBArray(), getTranslations(translationLinks)])
 
   for (const query of cleanSearchArr) {
-    // Launch the browser
-    await launchBrowser()
-    let parsedStr
     try {
+    // Launch the browser
+      await launchBrowser()
+
       // Stores the links we got from google search
       const linksarr = await getGoogleLinks(query + ' in quran')
       // stores the  html string for all the links we got from previous google search step
       const htmlStr = await linksFetcher(linksarr)
       // stores the parsed html string
-      parsedStr = htmlToString(htmlStr)
+      const parsedStr = htmlToString(htmlStr)
+      // Close the browsers to save resources , so gestalt can get more resources
+      await browser.close()
+
+      let confirmedVerses = await gestaltInference(parsedStr)
+      // Remove duplicates
+      confirmedVerses = [...new Set(confirmedVerses)]
+      let translatedQueryArr = translateQuery(query).concat(query)
+
+      // Remove duplicates
+      translatedQueryArr = [...new Set(translatedQueryArr.map(e => e.trim()))]
+      // save the query & confirmed verses in JSON
+      saveQuestionVerses(translatedQueryArr, confirmedVerses)
     } catch (error) {
-      console.log("Ignore query as link fetching wansn't successful, query is ", query)
+      console.log('Seems like there was a problem during this query: \n', query)
+      // Close the browsers ,just in case it wasn't closed above
+      await browser.close()
       console.error(error)
-      continue
     }
-
-    // Close the browsers to save resources , so gestalt can get more resources
-    await browser.close()
-
-    let confirmedVerses = await gestaltInference(parsedStr)
-    // Remove duplicates
-    confirmedVerses = [...new Set(confirmedVerses)]
-    let translatedQueryArr = translateQuery(query).concat(query)
-
-    // Remove duplicates
-    translatedQueryArr = [...new Set(translatedQueryArr.map(e => e.trim()))]
-    // save the query & confirmed verses in JSON
-    saveQuestionVerses(translatedQueryArr, confirmedVerses)
   }
 }
 
