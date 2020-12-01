@@ -1271,6 +1271,8 @@ function changeDonateURL (hintArr) {
   const shareMsg = hintArr.concat(engHintQues).join('\n')
   // Donation page URL
   const url = 'https://fawazahmed0.github.io/donate.html'
+  // Remove the donate for now
+  const nodonatebtn = "no";
 
   const encodedShareLink = encodeURIComponent(shareLink)
   const encodedshareMsg = encodeURIComponent(shareMsg)
@@ -1280,7 +1282,7 @@ function changeDonateURL (hintArr) {
   // Message to show on page
   const encodedMyMsg = encodeURIComponent(' ')
 
-  const fullurl = url + '?mymsg=' + encodedMyMsg + '&sharelink=' + encodedShareLink + '&smallsharetext=' + encodedshareMsg + '&largesharetext=' + encodedshareMsg + '&sharebtnmsg=' + encodedShareBtnMsg
+  const fullurl = url + '?mymsg=' + encodedMyMsg + '&sharelink=' + encodedShareLink + '&smallsharetext=' + encodedshareMsg + '&largesharetext=' + encodedshareMsg + '&sharebtnmsg=' + encodedShareBtnMsg+'&nodonatebtn='+nodonatebtn;
   // Set the url in the donate button
   $('#donatebtn').prop('href', fullurl)
 }
