@@ -1141,7 +1141,7 @@ window.beginSearch = async function beginSearch () {
     // Fetch verses
     confirmedVerses = await getInferredVerses(searchQuery)
     // store the confirmed verses in globally accessible variable
-     gloConfirmedVerses = confirmedVerses 
+    gloConfirmedVerses = confirmedVerses
   } catch (error) {
     console.error(error)
   }
@@ -1152,8 +1152,8 @@ window.beginSearch = async function beginSearch () {
 }
 
 async function showResult (verses) {
-   // remove the old verses and spinning wheel etc
-   $('#versescolumn').empty()
+  // remove the old verses and spinning wheel etc
+  $('#versescolumn').empty()
   if (verses.length > 0) {
     // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
     verses = verses.map(e => e.split(',').map(e => parseInt(e)))
