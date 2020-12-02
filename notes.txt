@@ -13,3 +13,12 @@ file -> version history , see version history, click the version and click resto
 
 To add data, directly use search bar or google forms https://docs.google.com/forms/d/e/1FAIpQLSd8nWN872r2l1VihernpIfBL1RV-irGjANQAYl-89DVDmTVug/viewform
 don't insert value direclty in the sheet
+
+
+Note on how this work:
+At JS side
+First it fetches all the jsons etc, then  check if there already search query exists, if exsits then use those verses(thses are stored at questionverse.min.json file), then if the above check fails then saves the query in google forms, translats the query and searches in google and then inferrer the query using gestalt matcher and then show the results to user
+
+
+At node side:
+runs on cron for specified times, fetches the queries searched by users from google forms and then translate it and then search in google and then perfrom brute inferrence using gestalt and then save the results to questionverse.min.json
