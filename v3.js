@@ -1141,13 +1141,10 @@ window.beginSearch = async function beginSearch () {
     // Fetch verses
     confirmedVerses = await getInferredVerses(searchQuery)
     // store the confirmed verses in globally accessible variable
-    if (confirmedVerses.length > 0) { gloConfirmedVerses = confirmedVerses }
+     gloConfirmedVerses = confirmedVerses 
   } catch (error) {
     console.error(error)
   }
-
-  // If no verse retrieved or there was error in retreival, then remove the spinning wheel
-  if (confirmedVerses.length === 0) { removeSpinningWheel() }
 
   console.log(confirmedVerses)
   // Show the result in the page
@@ -1155,11 +1152,12 @@ window.beginSearch = async function beginSearch () {
 }
 
 async function showResult (verses) {
+   // remove the old verses and spinning wheel etc
+   $('#versescolumn').empty()
   if (verses.length > 0) {
     // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
     verses = verses.map(e => e.split(',').map(e => parseInt(e)))
-    // remove the old verses and spinning wheel etc
-    $('#versescolumn').empty()
+
     // Add the card element, so verses get shown in cards
     $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
 
