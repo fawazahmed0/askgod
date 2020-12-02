@@ -1255,10 +1255,10 @@ window.changeLang = async function changeLang () {
   for (const val of translatedHintArr) { $('#hintplaceholder').append('<div class="carousel-item text-center">' + val + '</div>') }
   // Set the selected edition in global variable
   await setSelectedEdition()
-  if (gloConfirmedVerses.length > 0){
-  removeSpinningWheel()
-  // Show the result, if exists
-  showResult(gloConfirmedVerses)
+  if (gloConfirmedVerses.length > 0) {
+    removeSpinningWheel()
+    // Show the result, if exists
+    showResult(gloConfirmedVerses)
   }
   // Change the donate url according to language
 
