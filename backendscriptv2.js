@@ -66,12 +66,15 @@ async function getDBArray () {
 
 // Cleans the searched questions retrieved from google forms from already added question in questionVerses json
 // To avoid doing inference for questions which were already inferred in questionVerses json
-// Doesn't return complete array, only first 80 elems of cleanArr
+// Also translates the array to english
+// Doesn't return complete array, only first n elems of cleanArr
 async function getCleanDBArray () {
   const searchArr = await getDBArray()
   const fullQuestionsArr = questionVerses.values.map(e => e.questions).flat().map(e => e.toLowerCase())
-  const cleanArr = searchArr.filter(e => !fullQuestionsArr.includes(e.toLowerCase()))
-  return [...new Set(cleanArr.map(e => e.trim()))].slice(0, noOfQues)
+  const filteredArr = searchArr.filter(e => !fullQuestionsArr.includes(e.toLowerCase()))
+  const slicedArr = [...new Set(filteredArr.map(e => e.trim()))].slice(0, noOfQues)
+  const transArr = translateQueryToEng(transArr)
+  return transArr
 }
 
 // Fetches the translationLinks and returns the translations in optimized array form
@@ -396,6 +399,19 @@ function translateQuery (query) {
     return []
   }
 }
+
+// Takes a string & returns all the translations of a given query in an array
+// It could break anytime ,reasons include timeout, api broken etc
+function translateQueryToEng (query) {
+  try {
+    const result = runPyScript('translateToEng.py', [query])
+    return JSON.parse(result)
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
 
 // Takes array of translated queries and confirmed verses & save to questionverses.min.json
 function saveQuestionVerses (query, verses) {
