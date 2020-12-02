@@ -73,7 +73,7 @@ async function getCleanDBArray () {
   const fullQuestionsArr = questionVerses.values.map(e => e.questions).flat().map(e => e.toLowerCase())
   const filteredArr = searchArr.filter(e => !fullQuestionsArr.includes(e.toLowerCase()))
   const slicedArr = [...new Set(filteredArr.map(e => e.trim()))].slice(0, noOfQues)
-  const transArr = translateQueryToEng(transArr)
+  const transArr = translateQueryToEng(slicedArr)
   return transArr
 }
 
