@@ -16,7 +16,7 @@ translator = google_translator(url_suffix="hk", timeout=10)
 
 # Set to UTF-8 to avoid error
 # it requires python 3.7+ to run the below command
-sys.stdout.reconfigure(encoding='utf-8')
+#sys.stdout.reconfigure(encoding='utf-8')
 
 # python command line args https://www.tutorialspoint.com/python/python_command_line_arguments.htm
 args = sys.argv
