@@ -160,10 +160,8 @@ async function inference () {
   // Get all the translations
   const [cleanSearchArr] = await Promise.all([getCleanDBArray(), getTranslations(translationLinks)])
 
-
   for (let query of cleanSearchArr) {
     try {
-   
     // Launch the browser
       await launchBrowser()
 
@@ -407,15 +405,13 @@ function translateQuery (query) {
 function translateQueryToEng (query) {
   try {
     const result = runPyScript('translateToEng.py', [query])
-    if(result === '')
-       return query
+    if (result === '') { return query }
     return result
   } catch (error) {
     console.error(error)
     return []
   }
 }
-
 
 // Takes array of translated queries and confirmed verses & save to questionverses.min.json
 function saveQuestionVerses (query, verses) {
