@@ -121,9 +121,16 @@ async function linkFetcher (link) {
       for (let i = elements.length; i-- > 0;) { elements[i].parentNode.removeChild(elements[i]) }
     }
     // remove script and style tags
-    removeTag('script')
-    removeTag('style')
-    return document.documentElement.outerHTML
+    try {
+      removeTag('script')
+      removeTag('style')
+      return document.documentElement.outerHTML
+    } catch (error) {
+      console.error(error)
+      return ''
+    }
+
+    
   })
 }
 
