@@ -4,7 +4,7 @@ from google_trans_new import google_translator
 import random
 import time
 
-# This script takes list of strings as arguments and return back english translation of it in an array
+# This script takes string as arguments and return back english translation of it
 
 # Refer https://github.com/lushan88a/google_trans_new to see examples on how to use this package
 translator = google_translator(url_suffix="hk", timeout=10)
@@ -21,14 +21,10 @@ args.pop(0)
 # use Ubuntu 20.04.1 LTS in Github actions
 
 
-querylist = []
 
-for query in args:
-    time.sleep(random.uniform(0.2, 0.5))
-    translate_text = translator.translate(
-        query, lang_tgt='en')
-    querylist.append(translate_text)
+translate_text = translator.translate(
+        args[0], lang_tgt='en')
 
 
 # Print out the list to stdout
-sys.stdout.write(json.dumps(querylist))
+sys.stdout.write(translate_text)

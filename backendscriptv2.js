@@ -73,8 +73,7 @@ async function getCleanDBArray () {
   const fullQuestionsArr = questionVerses.values.map(e => e.questions).flat().map(e => e.toLowerCase())
   const filteredArr = searchArr.filter(e => !fullQuestionsArr.includes(e.toLowerCase()))
   const slicedArr = [...new Set(filteredArr.map(e => e.trim()))].slice(0, noOfQues)
-  const transArr = translateQueryToEng(slicedArr)
-  return transArr
+  return slicedArr
 }
 
 // Fetches the translationLinks and returns the translations in optimized array form
@@ -161,11 +160,14 @@ async function inference () {
   // Get all the translations
   const [cleanSearchArr] = await Promise.all([getCleanDBArray(), getTranslations(translationLinks)])
 
-  for (const query of cleanSearchArr) {
+
+  for (let query of cleanSearchArr) {
     try {
+   
     // Launch the browser
       await launchBrowser()
 
+      query = translateQueryToEng(query)
       // Stores the links we got from google search
       const linksarr = await getGoogleLinks(query + ' in quran')
       // stores the  html string for all the links we got from previous google search step
@@ -405,7 +407,9 @@ function translateQuery (query) {
 function translateQueryToEng (query) {
   try {
     const result = runPyScript('translateToEng.py', [query])
-    return JSON.parse(result)
+    if(result === '')
+       return query
+    return result
   } catch (error) {
     console.error(error)
     return []
