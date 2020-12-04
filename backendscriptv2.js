@@ -94,9 +94,21 @@ async function getLinksJSON (urls) {
 // Takes links array to be fetched and returns merged html of all links
 // Usually getGoogleLinks() result is passed in here
 async function linksFetcher (linksarr) {
-  let val = await Promise.allSettled(linksarr.map(e => linkFetcher(e)))
-  val = val.map(e => e.value ? e.value : '')
-  return val.reduce((full, curr) => full + curr)
+ // let val = await Promise.allSettled(linksarr.map(e => linkFetcher(e)))
+ // val = val.map(e => e.value ? e.value : '')
+  //return val.reduce((full, curr) => full + curr)
+  let totalval="";
+  for(const link of linksarr){
+    let val = ""
+    try {
+       val = await linkFetcher(link)
+    } catch (error) {
+      console.error(error)
+    }
+  
+  totalval = totalval+val
+  }
+  return totalval
 }
 
 async function linkFetcher (link) {
