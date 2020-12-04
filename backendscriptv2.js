@@ -171,12 +171,10 @@ async function inference () {
     try {
     // Launch the browser
       await launchBrowser()
-      console.log("query before translation is ",query)
+
       query = translateQueryToEng(query)
-      console.log("query before translation is ",query)
       // Stores the links we got from google search
       const linksarr = await getGoogleLinks(query + ' in quran')
-      console.log("links are\n",linksarr)
       // stores the  html string for all the links we got from previous google search step
       const htmlStr = await linksFetcher(linksarr)
       // stores the parsed html string
