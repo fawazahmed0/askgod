@@ -38,7 +38,7 @@ const googleSearchLink = 'https://www.google.com/search?&q='
 const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
 const editionsLink = apiLink + '/editions'
 // Eigthy questions to search at a time to avoid 6 hours actions time limit
-const noOfQues = 300
+const noOfQues = 100
 
 // Read the already inferred question & it's verses
 const questionVersesPath = path.join(__dirname, 'questionverses.min.json')
