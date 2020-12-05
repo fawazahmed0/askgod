@@ -177,10 +177,13 @@ async function inference () {
       const linksarr = await getGoogleLinks(query + ' in quran')
       // stores the  html string for all the links we got from previous google search step
       const htmlStr = await linksFetcher(linksarr)
+     // Close the browsers to save resources , so gestalt can get more resources
+      await browser.close()
+      if(htmlStr==='')
+        continue
       // stores the parsed html string
       const parsedStr = htmlToString(htmlStr)
-      // Close the browsers to save resources , so gestalt can get more resources
-      await browser.close()
+
 
       let confirmedVerses = await gestaltInference(parsedStr)
       // Remove duplicates
