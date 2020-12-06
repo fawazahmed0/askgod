@@ -75,6 +75,13 @@ const engProclaimMsg = 'God only asks to accept that there is none worthy of wor
 let proclaimMsg
 const proclaimLink = askGodLink + 'proclaim.min.json'
 let proclaimJSON
+
+
+// Have to translate this in different languages
+const engWaitMsg = 'Please wait a few seconds, answers are loading'
+let waitMsg
+const waitMsgLink = askGodLink + 'waitmsg.min.json'
+let waitMsgJSON
 // Stores the current confirmed Verses
 let gloConfirmedVerses = []
 
@@ -98,7 +105,9 @@ async function oneTimeFunc () {
   // Get hint question JSON
   [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
   // Get proclaim message JSON
-  [proclaimJSON] = await getLinksJSON([proclaimLink])
+  [proclaimJSON] = await getLinksJSON([proclaimLink]);
+    // Get wait message JSON
+    [waitMsgJSON] = await getLinksJSON([waitMsgLink]);
   // Create the dropdown
   createDropdown()
   // Setup Google Forms as DB
@@ -1234,6 +1243,7 @@ window.changeLang = async function changeLang () {
   for (const [key, value] of Object.entries(googToDropdownLang)) {
     hintQuestionJSON[value] = hintQuestionJSON[key]
     proclaimJSON[value] = proclaimJSON[key]
+    waitMsgJSON[value] = waitMsgJSON[key]
   }
 
   // Remove latin/latinD from dropdown language
@@ -1246,6 +1256,11 @@ window.changeLang = async function changeLang () {
   proclaimMsg = engProclaimMsg
   for (const [key, value] of Object.entries(proclaimJSON)) {
     if (key === langSelectedClean.toLowerCase()) { proclaimMsg = value.join('<br>') }
+  }
+
+  waitMsg = engWaitMsg
+  for (const [key, value] of Object.entries(waitMsgJSON)) {
+    if (key === langSelectedClean.toLowerCase()) { waitMsg = value.join('<br>') }
   }
 
   // Remove the old values/hint questions & append english hint question
@@ -1302,7 +1317,7 @@ function showSpinningWheel () {
   if ($('#spinningwheel').length === 0) {
     $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
       <div class="spinner-border m-5" role="status">
-      <span class="visually-hidden">Loading...</span>
+      <span id="waitmsgholder">`+waitMsg+`</span>
       </div> </div>`)
   }
 }

@@ -9,7 +9,7 @@ import time
 # the query in translated language
 # saves the JSON in querytranslated.json file
 
-query = "God only asks to accept that there is none worthy of worship except him"
+query = "Please wait a few seconds, answers are loading"
 
 # Refer https://github.com/lushan88a/google_trans_new to see examples on how to use this package
 translator = google_translator(url_suffix="hk", timeout=10)
