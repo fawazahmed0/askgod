@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const fetch = require('node-fetch')
-const { chromium } = require('playwright')
+const { firefox } = require('playwright')
 const { JSDOM } = require('jsdom')
 const { window } = new JSDOM('')
 const $ = require('jquery')(window)
@@ -125,7 +125,7 @@ async function linkFetcher (link) {
 // context and browser is a global variable and it can be accessed from anywhere
 // function that launches a browser
 async function launchBrowser () {
-  browser = await chromium.launch({
+  browser = await firefox.launch({
     headless: true
   })
   context = await browser.newContext()
