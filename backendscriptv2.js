@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const fetch = require('node-fetch')
-const { webkit } = require('playwright')
+const { chromium } = require('playwright')
 const { JSDOM } = require('jsdom')
 const { window } = new JSDOM('')
 const $ = require('jquery')(window)
@@ -38,7 +38,7 @@ const googleSearchLink = 'https://www.google.com/search?&q='
 const apiLink = 'https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1'
 const editionsLink = apiLink + '/editions'
 // Eigthy questions to search at a time to avoid 6 hours actions time limit
-const noOfQues = 100
+const noOfQues = 2
 
 // Read the already inferred question & it's verses
 const questionVersesPath = path.join(__dirname, 'questionverses.min.json')
@@ -125,7 +125,7 @@ async function linkFetcher (link) {
 // context and browser is a global variable and it can be accessed from anywhere
 // function that launches a browser
 async function launchBrowser () {
-  browser = await webkit.launch({
+  browser = await chromium.launch({
     headless: true
   })
   context = await browser.newContext()
