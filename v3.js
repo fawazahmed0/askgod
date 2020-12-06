@@ -76,7 +76,6 @@ let proclaimMsg
 const proclaimLink = askGodLink + 'proclaim.min.json'
 let proclaimJSON
 
-
 // Have to translate this in different languages
 const engWaitMsg = 'Please wait a few seconds, answers are loading'
 let waitMsg
@@ -106,11 +105,11 @@ async function oneTimeFunc () {
   [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
   // Get proclaim message JSON
   [proclaimJSON] = await getLinksJSON([proclaimLink]);
-    // Get wait message JSON
-    [waitMsgJSON] = await getLinksJSON([waitMsgLink]);
-   // Replace google translate named languages to dropdown named languages, used for multi language showing
-   // Happens for proclaimJSON, waitMsgJSON, hintQuestionJSON
-    changeToDropDownLang()
+  // Get wait message JSON
+  [waitMsgJSON] = await getLinksJSON([waitMsgLink])
+  // Replace google translate named languages to dropdown named languages, used for multi language showing
+  // Happens for proclaimJSON, waitMsgJSON, hintQuestionJSON
+  changeToDropDownLang()
   // Create the dropdown
   createDropdown()
   // Setup Google Forms as DB
@@ -1230,14 +1229,13 @@ function sortObjByKeys (obj) {
   return sortedObj
 }
 
-function changeToDropDownLang(){
-    // Replace google translate named languages to dropdown named languages, used for multi language showing
-    for (const [key, value] of Object.entries(googToDropdownLang)) {
-      hintQuestionJSON[value] = hintQuestionJSON[key]
-      proclaimJSON[value] = proclaimJSON[key]
-      waitMsgJSON[value] = waitMsgJSON[key]
-    }
-
+function changeToDropDownLang () {
+  // Replace google translate named languages to dropdown named languages, used for multi language showing
+  for (const [key, value] of Object.entries(googToDropdownLang)) {
+    hintQuestionJSON[value] = hintQuestionJSON[key]
+    proclaimJSON[value] = proclaimJSON[key]
+    waitMsgJSON[value] = waitMsgJSON[key]
+  }
 }
 
 window.changeLang = async function changeLang () {
@@ -1251,7 +1249,6 @@ window.changeLang = async function changeLang () {
   let [hintQuestion] = await getLinksJSON([hintQuestionLink]);
   console.log(Object.keys(dropdownObj).filter(e=>!Object.keys(hintQuestion).includes(e.toLowerCase())))
   */
-
 
   // Remove latin/latinD from dropdown language
   const langSelectedClean = langSelected.replace(/.(latin|latind)$/i, '').trim()
@@ -1327,7 +1324,7 @@ function showSpinningWheel () {
       <div class="spinner-border m-5" role="status">
       </div>
       </div>
-      <div id="waitmsgholder" class="text-center mb-5">`+waitMsg+`</div>
+      <div id="waitmsgholder" class="text-center mb-5">` + waitMsg + `</div>
       </div?
       `)
   }
