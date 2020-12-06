@@ -108,6 +108,9 @@ async function oneTimeFunc () {
   [proclaimJSON] = await getLinksJSON([proclaimLink]);
     // Get wait message JSON
     [waitMsgJSON] = await getLinksJSON([waitMsgLink]);
+   // Replace google translate named languages to dropdown named languages, used for multi language showing
+   // Happens for proclaimJSON, waitMsgJSON, hintQuestionJSON
+    changeToDropDownLang()
   // Create the dropdown
   createDropdown()
   // Setup Google Forms as DB
@@ -1227,6 +1230,16 @@ function sortObjByKeys (obj) {
   return sortedObj
 }
 
+function changeToDropDownLang(){
+    // Replace google translate named languages to dropdown named languages, used for multi language showing
+    for (const [key, value] of Object.entries(googToDropdownLang)) {
+      hintQuestionJSON[value] = hintQuestionJSON[key]
+      proclaimJSON[value] = proclaimJSON[key]
+      waitMsgJSON[value] = waitMsgJSON[key]
+    }
+
+}
+
 window.changeLang = async function changeLang () {
   // Show spinning wheel only if there are verses already shown in the page
   if (gloConfirmedVerses.length > 0) { showSpinningWheel() }
@@ -1239,12 +1252,6 @@ window.changeLang = async function changeLang () {
   console.log(Object.keys(dropdownObj).filter(e=>!Object.keys(hintQuestion).includes(e.toLowerCase())))
   */
 
-  // Replace google translate named languages to dropdown named languages, used for multi language showing
-  for (const [key, value] of Object.entries(googToDropdownLang)) {
-    hintQuestionJSON[value] = hintQuestionJSON[key]
-    proclaimJSON[value] = proclaimJSON[key]
-    waitMsgJSON[value] = waitMsgJSON[key]
-  }
 
   // Remove latin/latinD from dropdown language
   const langSelectedClean = langSelected.replace(/.(latin|latind)$/i, '').trim()
@@ -1315,10 +1322,14 @@ function changeDonateURL (hintArr) {
 // Show as loading spinning wheel,only if there isn't any other
 function showSpinningWheel () {
   if ($('#spinningwheel').length === 0) {
-    $('#versescolumn').prepend(`<div id="spinningwheel"class="text-center">
+    $('#versescolumn').prepend(`<div  id="spinningwheel">
+    <div class="text-center">
       <div class="spinner-border m-5" role="status">
-      <span id="waitmsgholder">`+waitMsg+`</span>
-      </div> </div>`)
+      </div>
+      </div>
+      <div id="waitmsgholder" class="text-center mb-5">`+waitMsg+`</div>
+      </div?
+      `)
   }
 }
 
