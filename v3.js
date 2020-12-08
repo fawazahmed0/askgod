@@ -143,7 +143,7 @@ async function translate (str) {
 // returns empty array if no questions matches the query
 async function getQueryVerses (query) {
   const cleanQuery = cleanifyStr(query)
-  const passRatio = 0.95
+  const passRatio = 0.90
   for (const val of questionVerses.values) {
     for (const question of val.questions) {
       if (getGestaltRatio(cleanifyStr(question), cleanQuery) > passRatio) { return val.verses }
@@ -171,7 +171,9 @@ async function getInferredVerses (query) {
     console.error(error)
   }
   // Translate query to english
-  const engQuery = await translate(query)
+  let engQuery = await translate(query)
+  // Replace you with God
+  engQuery = engQuery.replace(/\byou\b/gi, 'God')
   // Get google search result links , add space repeat to avoid query caching
   const googLinks = await getGoogleLinks(engQuery.trim() + ' '.repeat(getRandomNo(3)) + ' in quran')
   // Fetch google searched result links
