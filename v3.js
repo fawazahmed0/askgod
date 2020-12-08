@@ -1325,7 +1325,7 @@ function showSpinningWheel () {
       </div>
       </div>
       <div id="waitmsgholder" class="text-center mb-5">` + waitMsg + `</div>
-      </div?
+      </div>
       `)
   }
 }
