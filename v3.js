@@ -1172,9 +1172,11 @@ async function showResult (verses) {
 
     // Add the card element, so verses get shown in cards
     $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
-
+    const editionSelected = $('#langdropdown').val();
     for (const [chap, ver] of verses) {
-      $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + selectedTrans[chap - 1][ver - 1] + ' - [Quran ' + chap + ':' + ver + ']</li>')
+      let verseLink = 'https://fawazahmed0.github.io/quran?editions='+editionSelected+'#'+chap + ':' + ver
+      let verseLinkTag =  '<a class="text-info" target="_blank" rel="noopener noreferrer" href="'+verseLink+'">'+chap + ':' + ver+'</a>'
+      $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + selectedTrans[chap - 1][ver - 1] + ' - [Quran ' + verseLinkTag+ ']</li>')
     }
 
     $('#verseslist').append('<li class="list-group-item p-2 bg-dark text-white" dir="auto">' + proclaimMsg + '</li>')
