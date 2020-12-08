@@ -173,6 +173,8 @@ async function inference () {
       await launchBrowser()
 
       query = translateQueryToEng(query)
+      // Replace you with God
+      query = query.replace(/\byou\b/gi, 'God')
       // Stores the links we got from google search
       const linksarr = await getGoogleLinks(query + ' in quran')
       // stores the  html string for all the links we got from previous google search step
