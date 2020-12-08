@@ -1167,16 +1167,15 @@ async function showResult (verses) {
   // remove the old verses and spinning wheel etc
   $('#versescolumn').empty()
   if (verses.length > 0) {
+    const editionSelected = $('#langdropdown').val()
     // convert verses from ["4,3","7,3"] to [[4,3],[7,3]]
     verses = verses.map(e => e.split(',').map(e => parseInt(e)))
-
     // Add the card element, so verses get shown in cards
     $('#versescolumn').append('<ul id="verseslist" class="card list-group list-group-flush"></ul>')
-    const editionSelected = $('#langdropdown').val();
     for (const [chap, ver] of verses) {
-      let verseLink = 'https://fawazahmed0.github.io/quran?editions='+editionSelected+'#'+chap + ':' + ver
-      let verseLinkTag =  '<a class="text-info" target="_blank" rel="noopener noreferrer" href="'+verseLink+'">'+chap + ':' + ver+'</a>'
-      $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + selectedTrans[chap - 1][ver - 1] + ' - [Quran ' + verseLinkTag+ ']</li>')
+      const verseLink = 'https://fawazahmed0.github.io/quran?editions=' + editionSelected + '#' + chap + ':' + ver
+      const verseLinkTag = '<a class="text-info" target="_blank" rel="noopener noreferrer" href="' + verseLink + '">' + chap + ':' + ver + '</a>'
+      $('#verseslist').append('<li class="list-group-item p-2" dir="auto">' + selectedTrans[chap - 1][ver - 1] + ' - [Quran ' + verseLinkTag + ']</li>')
     }
 
     $('#verseslist').append('<li class="list-group-item p-2 bg-dark text-white" dir="auto">' + proclaimMsg + '</li>')
