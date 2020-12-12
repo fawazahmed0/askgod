@@ -404,7 +404,7 @@ function runPyScript (pathToScript, args) {
 // It could break anytime ,reasons include timeout, api broken etc
 function translateQuery (query) {
   try {
-    const result = runPyScript('translateToMulti.py', [query])
+    const result = runPyScript(path.join(__dirname,'translateToMulti.py'), [query])
     return JSON.parse(result)
   } catch (error) {
     console.error(error)
