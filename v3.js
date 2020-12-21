@@ -100,8 +100,8 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-w
 // call this only once
 async function oneTimeFunc () {
   // Editions JSON from quran api, hint question JSON, proclaim message JSON, wait message JSON
-  [editionsJSON, hintQuestionJSON, proclaimJSON, waitMsgJSON] = await getLinksJSON([editionsLink + '.min.json', hintQuestionLink, proclaimLink, waitMsgLink]);
-  
+  [editionsJSON, hintQuestionJSON, proclaimJSON, waitMsgJSON] = await getLinksJSON([editionsLink + '.min.json', hintQuestionLink, proclaimLink, waitMsgLink])
+
   // Replace google translate named languages to dropdown named languages, used for multi language showing
   // Happens for proclaimJSON, waitMsgJSON, hintQuestionJSON
   changeToDropDownLang()
@@ -118,8 +118,6 @@ async function oneTimeFunc () {
   [questionVerses] = await getLinksJSON([questionVerseLink])
   // Get the Translations
   translationsArr = await getTranslations(translationLinks)
-
-  // This func is called only once, next time it is just an empty block of code
 }
 
 // Return english translated text for the given string
