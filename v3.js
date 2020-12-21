@@ -99,14 +99,9 @@ if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-w
 
 // call this only once
 async function oneTimeFunc () {
-  // Editions JSON from quran api
-  [editionsJSON] = await getLinksJSON([editionsLink + '.min.json']);
-  // Get hint question JSON
-  [hintQuestionJSON] = await getLinksJSON([hintQuestionLink]);
-  // Get proclaim message JSON
-  [proclaimJSON] = await getLinksJSON([proclaimLink]);
-  // Get wait message JSON
-  [waitMsgJSON] = await getLinksJSON([waitMsgLink])
+  // Editions JSON from quran api, hint question JSON, proclaim message JSON, wait message JSON
+  [editionsJSON, hintQuestionJSON, proclaimJSON, waitMsgJSON] = await getLinksJSON([editionsLink + '.min.json', hintQuestionLink, proclaimLink, waitMsgLink]);
+  
   // Replace google translate named languages to dropdown named languages, used for multi language showing
   // Happens for proclaimJSON, waitMsgJSON, hintQuestionJSON
   changeToDropDownLang()
