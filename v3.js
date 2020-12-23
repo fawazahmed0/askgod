@@ -1141,6 +1141,8 @@ window.beginSearch = async function beginSearch () {
   if (searchQuery === '') { return }
   // Show as loading spinning wheel,only if there isn't any other
   showSpinningWheel()
+  // wait 10 millis so the spinning wheel can show up
+  await new Promise(r => setTimeout(r, 10));
 
   let confirmedVerses = []
   gloConfirmedVerses = confirmedVerses
