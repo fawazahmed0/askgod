@@ -7,13 +7,16 @@
 
 **In the name of God, who have guided me to do this work and I seek refuge in him, sufficient is God as protector**
 
+---
 
 A Simple Website Where you can ask questions in your language to God & Answers will be from Quran.
 
-Give it a try:<br>
+#### Give it a try:
 https://fawazahmed0.github.io/askgod/
 
 **Note:**<br> It will usually take little longer(1-2mins) to fetch the answers first time
+
+---
 
 #### Share:
 Please Share this with your family & friends and Star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#):<br>
