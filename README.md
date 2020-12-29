@@ -1,7 +1,7 @@
 <h1 align="center">AskGod   </h1>
 
 <p align="center">
-  <img width="460" height="300" src="https://github.com/fawazahmed0/askgod/raw/main/icons/original-icon.png">
+  <img width="460" height="300" src="https://github.com/fawazahmed0/askgod/raw/main/askgod.png">
 </p>
 
 
