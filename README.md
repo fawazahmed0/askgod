@@ -17,7 +17,7 @@ https://fawazahmed0.github.io/askgod/
 **Note:**<br> It will usually take little longer(1-2mins) to fetch the answers first time
 
 #### How it works:
-Your searched query is first translated into English using google translate, and then the query is searched in Google search engine, the results are retrieved and verses are searched in the result using Gestalt Pattern Matching Algorithm(difflib) and then the results are shown to the user
+Your searched query is first translated into English using google translate, and then the query is searched in Google search engine, the results are retrieved and verses are searched in the result using Gestalt Pattern Matching Algorithm(difflib) and then the matched verses are shown to the user
 
 ---
 
