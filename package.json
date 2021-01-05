@@ -2,7 +2,7 @@
   "name": "askgod",
   "main": "backendscriptv2.js",
   "dependencies": {
-    "playwright": "~1.6.2",
+    "playwright": "~1.7.0",
     "node-fetch": "latest",
     "jsdom": "latest",
     "jquery": "latest",
