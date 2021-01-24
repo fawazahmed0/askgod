@@ -400,6 +400,7 @@ function runPyScript (pathToScript, args) {
   return output.stdout.toString()
 }
 
+// Obsolete have to remove this later
 // Takes a string & returns all the translations of a given query in an array
 // It could break anytime ,reasons include timeout, api broken etc
 function translateQuery (query) {
