@@ -190,7 +190,7 @@ async function inference () {
       let confirmedVerses = await gestaltInference(parsedStr)
       // Remove duplicates
       confirmedVerses = [...new Set(confirmedVerses)]
-      let translatedQueryArr = translateQuery(query).concat(query)
+      let translatedQueryArr = [query]
 
       // Remove duplicates
       translatedQueryArr = [...new Set(translatedQueryArr.map(e => e.trim()))]
