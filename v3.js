@@ -2,11 +2,11 @@
 
 // Fix issue for parcel/babel, for async await thing for old browser, or only support new browsers with async await functionality
 // https://flaviocopes.com/parcel-regeneratorruntime-not-defined/
-import 'regenerator-runtime/runtime'
+//import 'regenerator-runtime/runtime'
 // Fix issue for parcel jquery script
 // https://github.com/parcel-bundler/parcel/issues/333#issuecomment-504552272
 // https://www.npmjs.com/package/jquery
-import $ from 'jquery'
+//import $ from 'jquery'
 import * as difflib from './difflib.js'
 
 // Change link based on UTC date, day of month to avoid using full dyno hours, links from two different accounts
@@ -95,7 +95,7 @@ const CHAPTER_LENGTH = 114
 const numberPattern = /(?<!\d)[0-2]?\d{1,2}(?!\d)/gi
 
 // Register Service worker for Add to Home Screen option to work
-if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/service-worker.js') }
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register(new URL('./service-worker.js', import.meta.url)) }
 
 // call this only once
 async function oneTimeFunc () {

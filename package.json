@@ -1,12 +1,17 @@
 {
   "name": "askgod",
   "main": "backendscriptv2.js",
+  "scripts": {
+    "serve": "parcel index.html --https",
+    "prebuild": "npx rimraf docs",
+    "build": "parcel build index.html -d docs --public-url ./"
+  },
   "dependencies": {
-    "playwright": "~1.7.0",
-    "node-fetch": "latest",
-    "jsdom": "latest",
+    "difflib": "latest",
     "jquery": "latest",
-    "difflib": "latest"
+    "jsdom": "latest",
+    "node-fetch": "latest",
+    "playwright": "~1.7.0"
   },
   "repository": {
     "type": "git",
@@ -17,5 +22,10 @@
   "bugs": {
     "url": "https://github.com/fawazahmed0/askgod/issues"
   },
-  "homepage": "https://github.com/fawazahmed0/askgod#readme"
+  "homepage": "https://github.com/fawazahmed0/askgod#readme",
+  "devDependencies": {
+    "@parcel/packager-raw-url": "^2.0.1",
+    "@parcel/transformer-webmanifest": "^2.0.1",
+    "parcel": "^2.0.1"
+  }
 }
