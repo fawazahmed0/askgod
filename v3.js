@@ -16,7 +16,6 @@ const corsHeroku = new Date().getUTCDate() > 10 ? corsHerokuLinks[0] : corsHerok
 
 const corsCloudflare = 'https://square-bread-052d.fawazahmed0.workers.dev'
 
-const translateHeroku = 'https://calm-inlet-40245.herokuapp.com'
 
 const googleSearchLink = 'https://www.google.com/search?&q='
 
@@ -120,17 +119,7 @@ async function oneTimeFunc () {
   translationsArr = await getTranslations(translationLinks)
 }
 
-// Return english translated text for the given string
-async function translate (str) {
-  const response = await fetch(translateHeroku + '/translateposttext', {
-    method: 'POST',
-    body: JSON.stringify(str)
-  })
 
-  const translatedText = await response.text()
-
-  return translatedText
-}
 
 // Get the question verses from already saved JSON
 // returns empty array if no questions matches the query
@@ -163,12 +152,13 @@ async function getInferredVerses (query) {
   } catch (error) {
     console.error(error)
   }
-  // Translate query to english
-  let engQuery = await translate(query)
+
+
+
   // Replace you with God
-  engQuery = engQuery.replace(/\byou\b/gi, 'God')
+  query = query.replace(/\byou\b/gi, 'God')
   // Get google search result links , add space repeat to avoid query caching
-  const googLinks = await getGoogleLinks(engQuery.trim() + ' '.repeat(getRandomNo(3)) + ' in quran')
+  const googLinks = await getGoogleLinks(query.trim() + ' '.repeat(getRandomNo(3)) + ' in quran')
   // Fetch google searched result links
   const htmlstr = await linksFetcher(googLinks)
   // convert html to string, it may throw error while parsing html to string
