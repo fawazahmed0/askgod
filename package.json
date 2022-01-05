@@ -1,13 +1,17 @@
 {
   "name": "askgod",
-  "main": "backendscriptv2.js",
   "scripts": {
     "serve": "parcel index.html --https",
     "prebuild": "npx rimraf docs",
-    "build": "parcel build index.html -d docs --public-url ./"
+    "build": "parcel build index.html --dist-dir docs --public-url ./"
   },
+  "browserslist": [
+    "defaults"
+  ],
   "dependencies": {
     "difflib": "latest",
+    "heap": "latest",
+    "assert": "latest",
     "jquery": "latest",
     "jsdom": "latest",
     "node-fetch": "latest",
