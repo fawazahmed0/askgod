@@ -67,7 +67,7 @@ const googToDropdownLang = {
 }
 
 // Easier to Understand editions
-const preferredEditions = { Arabic: 'ara-sirajtafseer', English: 'eng-miraneesuddin', Urdu: 'urd-abulaalamaududi' }
+const preferredEditions = { Arabic: 'ara-sirajtafseer', English: 'eng-mustafakhattabg', Urdu: 'urd_muhammadjunagar' }
 
 // Have to translate this in different languages
 const engProclaimMsg = 'God only asks to accept that there is none worthy of worship except him'
