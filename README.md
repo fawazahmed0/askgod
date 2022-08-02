@@ -22,6 +22,9 @@ The Quran translations are taken from [Quran-api](https://github.com/fawazahmed0
 
 ---
 
+#### Other Similar Projects:
+[Quran Hadith Search Engine](https://fawazahmed0.github.io/quran-hadith-search/)
+
 #### Share:
 Please Share this with your family & friends and Star this repo by clicking on [:star: button](#) above [:arrow_upper_right:](#):<br>
 [Share Link](https://fawazahmed0.github.io/donate.html?mymsg=%20&sharelink=https%3A%2F%2Ffawazahmed0.github.io%2Faskgod&smallsharetext=what%20is%20the%20purpose%20of%20life%3F%20%0AWhat%20is%20the%20purpose%20of%20life%3F&largesharetext=what%20is%20the%20purpose%20of%20life%3F%20%0AWhat%20is%20the%20purpose%20of%20life%3F&sharebtnmsg=%20&nodonatebtn=no)
